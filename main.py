@@ -5,9 +5,11 @@ numofsilver = 40
 numofgold = 30
 numofvict2 = 8
 numofvict34 = 12
+numofcurse = 10 #参加者一人当たりの呪いの枚数
 kindoftreasure = 3 #財宝カードの種類
 kindofvictoryc = 3 #基本勝利点カードの種類
 kindofaction = 10 #王国カードの種類
+
 
 class Game():
 	def __init__(self, number):
@@ -42,6 +44,13 @@ class Game():
 		self.field.victorypile[1].pile.extend(duchy)#公領の山を作る
 		province = [Province() for i in range(numofvict)]
 		self.field.victorypile[2].pile.extend(province)#属州の山を作る
+		
+		curse = [Curse() for i in range(self.number*numofcurse)]
+		self.field.cursepile.pile.extend(curse)#呪いの山を作る
+		
+		
+		
+		
 
 class Pile(): #サプライのカードの山
 	def __init__(self):
@@ -146,5 +155,7 @@ class Province(VictoryCard): #属州
 	def __init__(self):
 		super().__init__("Province", "属州", 8, "基本", "勝利点", "基本", 6)
 		
-		
+class Curse(CurseCard): #呪い
+	def __init__(self):
+		super().__init__("Curse", "呪い", 0, "基本", "呪い", "基本", -1)
 
