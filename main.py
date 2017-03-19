@@ -5,6 +5,9 @@ numofsilver = 40
 numofgold = 30
 numofvict2 = 8
 numofvict34 = 12
+kindoftreasure = 3 #財宝カードの種類
+kindofvictoryc = 3 #基本勝利点カードの種類
+kindofaction = 10 #王国カードの種類
 
 class Game():
 	def __init__(self, number):
@@ -22,28 +25,37 @@ class Game():
 		
 		copperrest = numofcopper - self.number * 7
 		copper = [Copper() for i in range(copperrest)]
-		self.field.treasurepile.append(copper)#銅貨の山を作る
+		self.field.treasurepile[0].plie.extend(copper)#銅貨の山を作る
 		silver = [Silver() for i in range(numofsilver)]
-		self.field.treasurepile.append(silver)#銀貨の山を作る
+		self.field.treasurepile[1].pile.extend(silver)#銀貨の山を作る
 		gold = [Gold() for i in range(numofgold)]
-		self.field.treasurepile.append(gold)#金貨の山を作る
-		
-		estate = [Estate() for i in range(numofvict2)]
-		self.field.victorypile.append(estate)#屋敷の山を作る
-		duchy = [Duchy() for i in range(numofvict2)]
-		self.field.victorypile.append(duchy)#公領の山を作る
-		province = [Province() for i in range(numofvict2)]
-		self.field.victorypile.append(province)#属州の山を作る
+		self.field.treasurepile[2].pile.extend(gold)#金貨の山を作る
 	
+		if self.number == 2: #人数によって勝利点カードの枚数を制御
+			numofvict = numofvict2
+		elif self.number == 3 or self.number == 4:
+			numofvict = numofvict34
+			
+		estate = [Estate() for i in range(numofvict)]
+		self.field.victorypile[0].pile.extend(estate)#屋敷の山を作る
+		duchy = [Duchy() for i in range(numofvict)]
+		self.field.victorypile[1].pile.extend(duchy)#公領の山を作る
+		province = [Province() for i in range(numofvict)]
+		self.field.victorypile[2].pile.extend(province)#属州の山を作る
+
+class Pile(): #サプライのカードの山
+	def __init__(self):
+		self.pile = [] #カードの山
+		#self.kind = kind #置かれるカードの種類
 	
 class Field():
 	zeropile = 0 #0枚になったサプライの個数
 	def __init__(self):
-		self.trash = [] #廃棄置き場
-		self.cursepile = [] #呪い置き場
-		self.treasurepile = [] #財宝置き場
-		self.victorypile = [] #勝利点カード置き場
-		self.actionpile = [] #アクションカード置き場
+		self.trash = Pile() #廃棄置き場(単独)
+		self.cursepile = Pile() #呪い置き場(単独)
+		self.treasurepile = [Pile() for i in range(kindoftreasure)] #財宝置き場
+		self.victorypile = [Pile() for i in range(kindofvictoryc)] #勝利点カード置き場
+		self.actionpile = [Pile() for i in range(kindofaction)] #王国カード置き場
 
 class Player():
 	def __init__(self):
@@ -64,8 +76,13 @@ class Player():
 		self.deck = self.deck[number:]
 		self.hand.extend(drawcard)
 	
+	def playcard(self, number): #カードは手札からプレイされる　手札の何枚目かをnumberとして与える
+		playedcard = self.hand.pop(number)
+		self.playarea.append(playedcard)#手札からカードを取り出して自分の場に出す
+		
 	def shuffle(self): #デッキをシャッフルする
 		random.shuffle(self.deck)
+	
 
 class Card(): #カード
 	def __init__(self, ename, jname, cost, clas, type, set):
@@ -75,6 +92,8 @@ class Card(): #カード
 		self.clas = clas #カードの分類(基本カードとか王国カードとか)
 		self.type = type #カードの種類
 		self.set = set #拡張セット
+	
+	def played(self): #カードがプレイされた時の挙動を書く
 
 class TreasureCard(Card): #財宝カード
 	def __init__(self, ename, jname, cost, clas, type, set, value):
