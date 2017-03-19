@@ -96,27 +96,27 @@ class Card(): #カード
 		self.clas = clas #カードの分類(基本カードとか王国カードとか)
 		self.type = type #カードの種類
 		self.set = set #拡張セット
-	
+		
 	def played(self, user): #カードがプレイされた時の挙動
 		pass
 
 class TreasureCard(Card): #財宝カード
 	def __init__(self, ename, jname, cost, clas, type, set, value):
 		super().__init__(ename, jname, cost, clas, type, set)
-		self.value = value
+		self.coins = value
 		
 	def played(self, user): #財宝カードがプレイされると使用者の残り金数が増える
-		user.coins += self.value
+		user.coins += self.coins
 
 class VictoryCard(Card): #勝利点カード
 	def __init__(self, ename, jname, cost, clas, type, set, value):
 		super().__init__(ename, jname, cost, clas, type, set)
-		self.value = value
+		self.vicpts = value
 		
 class CurseCard(Card): #呪いカード
 	def __init__(self, ename, jname, cost, clas, type, set, value):
 		super().__init__(ename, jname, cost, clas, type, set)
-		self.value = value
+		self.vicpts = value
 
 class ActionCard(Card): #アクションカード
 	def __init__(self, ename, jname, cost, clas, type, set):
