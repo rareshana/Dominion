@@ -25,7 +25,7 @@ class Game():
 		
 		copperrest = numofcopper - self.number * 7
 		copper = [Copper() for i in range(copperrest)]
-		self.field.treasurepile[0].plie.extend(copper)#銅貨の山を作る
+		self.field.treasurepile[0].pile.extend(copper)#銅貨の山を作る
 		silver = [Silver() for i in range(numofsilver)]
 		self.field.treasurepile[1].pile.extend(silver)#銀貨の山を作る
 		gold = [Gold() for i in range(numofgold)]
@@ -63,6 +63,9 @@ class Player():
 		self.hand = [] #手札
 		self.dispile = [] #捨て札の山
 		self.playarea = [] #各プレイヤーの場
+		self.coins = 0 #自分のターンに使える残り金数
+		self.restactions = 1 #自分のターンに使えるアクションの残り回数
+		self.restbuys = 1 #自分のターンで使用できる残り購入権
 	
 	def draw(self, number): #デッキからカードをnumber枚引く
 		if (number > len(self.deck)) and len(self.deck) > 0: #デッキの枚数が足りず、かつ捨て札があるとき
@@ -79,6 +82,7 @@ class Player():
 	def playcard(self, number): #カードは手札からプレイされる　手札の何枚目かをnumberとして与える
 		playedcard = self.hand.pop(number)
 		self.playarea.append(playedcard)#手札からカードを取り出して自分の場に出す
+		playedcard.played(self)
 		
 	def shuffle(self): #デッキをシャッフルする
 		random.shuffle(self.deck)
@@ -93,27 +97,30 @@ class Card(): #カード
 		self.type = type #カードの種類
 		self.set = set #拡張セット
 	
-	def played(self): #カードがプレイされた時の挙動を書く
+	def played(self, user): #カードがプレイされた時の挙動
+		pass
 
 class TreasureCard(Card): #財宝カード
 	def __init__(self, ename, jname, cost, clas, type, set, value):
 		super().__init__(ename, jname, cost, clas, type, set)
-		self.coins = value
+		self.value = value
+		
+	def played(self, user): #財宝カードがプレイされると使用者の残り金数が増える
+		user.coins += self.value
 
 class VictoryCard(Card): #勝利点カード
 	def __init__(self, ename, jname, cost, clas, type, set, value):
 		super().__init__(ename, jname, cost, clas, type, set)
-		self.vicpts = value
+		self.value = value
 		
 class CurseCard(Card): #呪いカード
 	def __init__(self, ename, jname, cost, clas, type, set, value):
 		super().__init__(ename, jname, cost, clas, type, set)
-		self.vicpts = value
+		self.value = value
 
 class ActionCard(Card): #アクションカード
 	def __init__(self, ename, jname, cost, clas, type, set):
 		super().__init__(ename, jname, cost, clas, type, set)
-		self.vicpts = value
 		
 class Copper(TreasureCard): #銅貨
 	def __init__(self):
