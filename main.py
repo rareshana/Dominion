@@ -145,4 +145,6 @@ class Duchy(VictoryCard): #公領
 class Province(VictoryCard): #属州
 	def __init__(self):
 		super().__init__("Province", "属州", 8, "基本", "勝利点", "基本", 6)
+		
+		
 
