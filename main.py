@@ -3,6 +3,8 @@ import random
 numofcopper = 60
 numofsilver = 40
 numofgold = 30
+numofvict2 = 8
+numofvict34 = 12
 
 class Game():
 	def __init__(self, number):
@@ -25,9 +27,17 @@ class Game():
 		self.field.treasurepile.append(silver)#銀貨の山を作る
 		gold = [Gold() for i in range(numofgold)]
 		self.field.treasurepile.append(gold)#金貨の山を作る
+		
+		estate = [Estate() for i in range(numofvict2)]
+		self.field.victorypile.append(estate)#屋敷の山を作る
+		duchy = [Duchy() for i in range(numofvict2)]
+		self.field.victorypile.append(duchy)#公領の山を作る
+		province = [Province() for i in range(numofvict2)]
+		self.field.victorypile.append(province)#属州の山を作る
 	
 	
 class Field():
+	zeropile = 0 #0枚になったサプライの個数
 	def __init__(self):
 		self.trash = [] #廃棄置き場
 		self.cursepile = [] #呪い置き場
@@ -100,6 +110,13 @@ class Gold(TreasureCard): #金貨
 		
 class Estate(VictoryCard): #屋敷
 	def __init__(self):
-		super().__init__("Estate", "屋敷", 2, "基本", "勝利点", "基本", 2)
+		super().__init__("Estate", "屋敷", 2, "基本", "勝利点", "基本", 1)
+		
+class Duchy(VictoryCard): #公領
+	def __init__(self):
+		super().__init__("Duchy", "公領", 5, "基本", "勝利点", "基本", 3)
 
+class Province(VictoryCard): #属州
+	def __init__(self):
+		super().__init__("Province", "属州", 8, "基本", "勝利点", "基本", 6)
 
