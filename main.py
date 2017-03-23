@@ -49,7 +49,7 @@ class Game():
 
 class Pile(): #サプライのカードの山
 	def __init__(self):
-		self.pile = [] #カードの山
+		self.pile = [] #カードの山 下から上へ
 		self.name = "" #山札に置かれているカードの名前
 	
 class Field():
@@ -72,10 +72,10 @@ class Field():
 		
 class Player():
 	def __init__(self):
-		self.deck = [] #デッキ
-		self.hand = [] #手札
-		self.dispile = [] #捨て札の山
-		self.playarea = [] #各プレイヤーの場
+		self.deck = [] #デッキ 下から上へ
+		self.hand = [] #手札 左から右へ
+		self.dispile = [] #捨て札の山 下から上へ
+		self.playarea = [] #各プレイヤーの場 左から右へ
 		self.coins = 0 #自分のターンに使える残り金数
 		self.restactions = 1 #自分のターンに使えるアクションの残り回数
 		self.restbuys = 1 #自分のターンで使用できる残り購入権
@@ -83,14 +83,14 @@ class Player():
 	def draw(self, number): #デッキからカードをnumber枚引く
 		if (number > len(self.deck)) and len(self.deck) > 0: #デッキの枚数が足りず、かつ捨て札があるとき
 			number = number - len(self.deck)
-			self.hand.extend(self.deck)
+			self.hand.extend(self.deck[::-1])
 			self.deck.clear()
 			self.deck = self.deck + self.dispile
 			self.dispile.clear()
 			self.shuffle()
-		drawcard = self.deck[:number]
-		self.deck = self.deck[number:]
-		self.hand.extend(drawcard)
+		drawcard = self.deck[-number:]
+		self.deck = self.deck[:-number]
+		self.hand.extend(drawcard[::-1])
 	
 	def playcard(self, number): #カードは手札からプレイされる　手札の何枚目かをnumberとして与える
 		playedcard = self.hand.pop(number)
@@ -100,8 +100,12 @@ class Player():
 	def shuffle(self): #デッキをシャッフルする
 		random.shuffle(self.deck)
 	
-	def gaincard(self): #カードを獲得するときの挙動#これから書く
-		pass
+	def gaincard(self, number, field): #カードは原則サプライから獲得される　山札の番号をnumberとして与える。それだけだと情報が足りないので、fieldの情報も与えなければ……
+		place = field.supnumber.get(number)
+		gainedcard = place.pile.pop()
+		self.dispile.append(gainedcard)
+		gainedcard.gained(self)
+		
 	
 
 class Card(): #カード

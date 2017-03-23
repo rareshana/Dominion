@@ -50,6 +50,5 @@ class TestDraw3(unittest.TestCase): #手札5枚、捨て札5枚、デッキ2枚�
 	def test_draw_dispilenumber(self): #デッキの枚数チェック
 		self._game.player[0].draw(3)
 		self.assertEqual(len(self._game.player[0].dispile), 0)
-		
-class 
+		 
 	
