@@ -107,8 +107,11 @@ class Player():
 		gainedcard.gained(self)
 	
 	def buycard(self, number, field):#カードは原則サプライから購入される　山札の番号をnumberとして与える。fieldの情報も与える。
-		pass
-	
+		boughtcard = field.supnumber.get(number).pile[0] #購入したいカードを変数に取得
+		self.coins -= boughtcard.cost #そのカードのコストを購入者の残り金から減算
+		self.restbuys -= 1 #購入権を1減らす
+		self.gaincard(number, field)
+		
 
 class Card(): #カード
 	def __init__(self, ename, jname, cost, clas, type, set):
