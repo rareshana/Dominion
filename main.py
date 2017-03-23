@@ -26,34 +26,25 @@ class Game():
 			self.player[i].deck.extend(estate)
 		
 		copperrest = numofcopper - self.number * 7
-		copper = [Copper() for i in range(copperrest)]
-		self.field.treasurepile[0].pile.extend(copper)#銅貨の山を作る
-		self.field.treasurepile[0].name = self.field.treasurepile[0].pile[0].ename
-		silver = [Silver() for i in range(numofsilver)]
-		self.field.treasurepile[1].pile.extend(silver)#銀貨の山を作る
-		self.field.treasurepile[1].name = self.field.treasurepile[1].pile[0].ename
-		gold = [Gold() for i in range(numofgold)]
-		self.field.treasurepile[2].pile.extend(gold)#金貨の山を作る
-		self.field.treasurepile[2].name = self.field.treasurepile[2].pile[0].ename
+		self.makesupply(copperrest, 2, Copper())#銅貨の山を作る
+		self.makesupply(numofsilver, 3, Silver())#銀貨の山を作る
+		self.makesupply(numofgold, 4, Gold())#金貨の山を作る
 	
 		if self.number == 2: #人数によって勝利点カードの枚数を制御
 			numofvict = numofvict2
 		elif self.number == 3 or self.number == 4:
 			numofvict = numofvict34
-			
-		estate = [Estate() for i in range(numofvict)]
-		self.field.victorypile[0].pile.extend(estate)#屋敷の山を作る
-		self.field.victorypile[0].pile[0].name = self.field.victorypile[0].pile[0].ename
-		duchy = [Duchy() for i in range(numofvict)]
-		self.field.victorypile[1].pile.extend(duchy)#公領の山を作る
-		self.field.victorypile[1].pile[0].name = self.field.victorypile[1].pile[0].ename
-		province = [Province() for i in range(numofvict)]
-		self.field.victorypile[2].pile.extend(province)#属州の山を作る
-		self.field.victorypile[2].pile[0].name = self.field.victorypile[2].pile[0].ename
 		
-		curse = [Curse() for i in range(self.number*numofcurse)]
-		self.field.cursepile.pile.extend(curse)#呪いの山を作る
-		self.field.cursepile.pile[0].name = self.field.cursepile.pile[0].ename
+		self.makesupply(numofvict, 5, Estate())#屋敷の山を作る
+		self.makesupply(numofvict, 6, Duchy())#公領の山を作る
+		self.makesupply(numofvict, 7, Province())#属州の山を作る
+		
+		self.makesupply((self.number-1)*numofcurse, 1, Curse()) #呪いの山を作る
+		
+	def makesupply(self, number, placenum, cardclass):
+		cards = [cardclass for i in range(number)]
+		self.field.supnumber.get(placenum).pile.extend(cards)
+		self.field.supnumber.get(placenum).name = self.field.supnumber.get(placenum).pile[0].ename
 
 
 class Pile(): #サプライのカードの山
