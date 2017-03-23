@@ -41,7 +41,7 @@ class Game():
 		
 		self.makesupply((self.number-1)*numofcurse, 1, Curse()) #呪いの山を作る
 		
-	def makesupply(self, number, placenum, cardclass):
+	def makesupply(self, number, placenum, cardclass): #山札を作る(引数は、枚数、場所、カードを生成するコマンド)
 		cards = [cardclass for i in range(number)]
 		self.field.supnumber.get(placenum).pile.extend(cards)
 		self.field.supnumber.get(placenum).name = self.field.supnumber.get(placenum).pile[0].ename
