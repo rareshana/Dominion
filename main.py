@@ -105,7 +105,9 @@ class Player():
 		gainedcard = place.pile.pop()
 		self.dispile.append(gainedcard)
 		gainedcard.gained(self)
-		
+	
+	def buycard(self, number, field):#カードは原則サプライから購入される　山札の番号をnumberとして与える。fieldの情報も与える。
+		pass
 	
 
 class Card(): #カード
