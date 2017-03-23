@@ -102,9 +102,10 @@ class Player():
 	
 	def gaincard(self, number, field): #カードは原則サプライから獲得される　山札の番号をnumberとして与える。それだけだと情報が足りないので、fieldの情報も与えなければ……
 		place = field.supnumber.get(number)
-		gainedcard = place.pile.pop()
-		self.dispile.append(gainedcard)
-		gainedcard.gained(self)
+		if place.pile: #山札が切れていない場合のみ獲得できる
+			gainedcard = place.pile.pop()
+			self.dispile.append(gainedcard)
+			gainedcard.gained(self)
 	
 	def buycard(self, number, field):#カードは原則サプライから購入される　山札の番号をnumberとして与える。fieldの情報も与える。
 		boughtcard = field.supnumber.get(number).pile[0] #購入したいカードを変数に取得

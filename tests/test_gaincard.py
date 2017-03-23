@@ -28,11 +28,11 @@ class TestGaincard2(unittest.TestCase): #既にサプライにカードがない
 	def test_gain_copper(self): #銅貨を獲得しようとする
 		self._game.player[0].gaincard(2, self._game.field)
 		self.assertEqual(len(self._game.player[0].dispile),0) #捨て札の枚数は0枚
-		self.assertEqual(len(self._game.field.supnumber.get(2).pile), 46) #銅貨の残り枚数は0枚
+		self.assertEqual(len(self._game.field.supnumber.get(2).pile), 0) #銅貨の残り枚数は0枚
 		self.assertEqual(self._game.player[0].dispile, []) #捨て札には何もない
 		
 	def test_gain_estate(self): #屋敷を獲得しようとする
 		self._game.player[0].gaincard(5, self._game.field)
 		self.assertEqual(len(self._game.player[0].dispile),0) #捨て札の枚数は0枚
-		self.assertEqual(len(self._game.field.supnumber.get(5).pile), 8) #屋敷の残り枚数は0枚
+		self.assertEqual(len(self._game.field.supnumber.get(5).pile), 0) #屋敷の残り枚数は0枚
 		self.assertEqual(self._game.player[0].dispile, []) #捨て札には何もない
