@@ -28,10 +28,13 @@ class Game():
 		copperrest = numofcopper - self.number * 7
 		copper = [Copper() for i in range(copperrest)]
 		self.field.treasurepile[0].pile.extend(copper)#銅貨の山を作る
+		self.field.treasurepile[0].name = self.field.treasurepile[0].pile[0].ename
 		silver = [Silver() for i in range(numofsilver)]
 		self.field.treasurepile[1].pile.extend(silver)#銀貨の山を作る
+		self.field.treasurepile[1].name = self.field.treasurepile[1].pile[0].ename
 		gold = [Gold() for i in range(numofgold)]
 		self.field.treasurepile[2].pile.extend(gold)#金貨の山を作る
+		self.field.treasurepile[2].name = self.field.treasurepile[2].pile[0].ename
 	
 		if self.number == 2: #人数によって勝利点カードの枚数を制御
 			numofvict = numofvict2
@@ -40,22 +43,23 @@ class Game():
 			
 		estate = [Estate() for i in range(numofvict)]
 		self.field.victorypile[0].pile.extend(estate)#屋敷の山を作る
+		self.field.victorypile[0].pile[0].name = self.field.victorypile[0].pile[0].ename
 		duchy = [Duchy() for i in range(numofvict)]
 		self.field.victorypile[1].pile.extend(duchy)#公領の山を作る
+		self.field.victorypile[1].pile[0].name = self.field.victorypile[1].pile[0].ename
 		province = [Province() for i in range(numofvict)]
 		self.field.victorypile[2].pile.extend(province)#属州の山を作る
+		self.field.victorypile[2].pile[0].name = self.field.victorypile[2].pile[0].ename
 		
 		curse = [Curse() for i in range(self.number*numofcurse)]
 		self.field.cursepile.pile.extend(curse)#呪いの山を作る
-		
-		
-		
-		
+		self.field.cursepile.pile[0].name = self.field.cursepile.pile[0].ename
+
 
 class Pile(): #サプライのカードの山
 	def __init__(self):
 		self.pile = [] #カードの山
-		#self.kind = kind #置かれるカードの種類
+		self.name = "" #山札に置かれているカードの名前
 	
 class Field():
 	zeropile = 0 #0枚になったサプライの個数
@@ -65,7 +69,8 @@ class Field():
 		self.treasurepile = [Pile() for i in range(kindoftreasure)] #財宝置き場
 		self.victorypile = [Pile() for i in range(kindofvictoryc)] #勝利点カード置き場
 		self.actionpile = [Pile() for i in range(kindofaction)] #王国カード置き場
-
+		self.supnumber = {1:self.treasurepile, 2:self.victorypile}
+		
 class Player():
 	def __init__(self):
 		self.deck = [] #デッキ
@@ -83,7 +88,7 @@ class Player():
 			self.deck.clear()
 			self.deck = self.deck + self.dispile
 			self.dispile.clear()
-			self.shuffle
+			self.shuffle()
 		drawcard = self.deck[:number]
 		self.deck = self.deck[number:]
 		self.hand.extend(drawcard)
@@ -95,6 +100,9 @@ class Player():
 		
 	def shuffle(self): #デッキをシャッフルする
 		random.shuffle(self.deck)
+	
+	def gaincard(self): #カードを獲得するときの挙動#これから書く
+		pass
 	
 
 class Card(): #カード
@@ -108,11 +116,15 @@ class Card(): #カード
 		
 	def played(self, user): #カードがプレイされた時の挙動
 		pass
+	
+	def gained(self, user): #カードが獲得された時の挙動
+		pass
 
 class TreasureCard(Card): #財宝カード
 	def __init__(self, ename, jname, cost, clas, type, set, value):
 		super().__init__(ename, jname, cost, clas, type, set)
 		self.coins = value
+		self.istreasure = 1 #財宝カードなら1
 		
 	def played(self, user): #財宝カードがプレイされると使用者の残り金数が増える
 		user.coins += self.coins
@@ -121,15 +133,18 @@ class VictoryCard(Card): #勝利点カード
 	def __init__(self, ename, jname, cost, clas, type, set, value):
 		super().__init__(ename, jname, cost, clas, type, set)
 		self.vicpts = value
+		self.isvictory = 1 #勝利点カードなら1
 		
 class CurseCard(Card): #呪いカード
 	def __init__(self, ename, jname, cost, clas, type, set, value):
 		super().__init__(ename, jname, cost, clas, type, set)
 		self.vicpts = value
-
+		self.iscurse = 1 #呪いカードなら1
+		
 class ActionCard(Card): #アクションカード
 	def __init__(self, ename, jname, cost, clas, type, set):
 		super().__init__(ename, jname, cost, clas, type, set)
+		self.isaction = 1 #アクションカードなら1
 		
 class Copper(TreasureCard): #銅貨
 	def __init__(self):
