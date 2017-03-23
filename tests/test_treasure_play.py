@@ -9,17 +9,17 @@ class TestTreasurePlay1(unittest.TestCase): #3人プレイ時のサプライに�
 	def test_play_copper(self): #銅貨をプレイする
 		copper=main.Copper()
 		self._game.player[0].hand.append(copper)
-		self._game.player[0].playcard(0)
+		self._game.player[0].playcard(5)
 		self.assertEqual(self._game.player[0].coins,1)
 		
 	def test_play_silver(self): #銀貨をプレイする
 		silver = main.Silver()
 		self._game.player[0].hand.append(silver)
-		self._game.player[0].playcard(0)
+		self._game.player[0].playcard(5)
 		self.assertEqual(self._game.player[0].coins,2)
 	
 	def test_play_gold(self): #金貨をプレイする
 		gold = main.Gold()
 		self._game.player[0].hand.append(gold)
-		self._game.player[0].playcard(0)
+		self._game.player[0].playcard(5)
 		self.assertEqual(self._game.player[0].coins,3)

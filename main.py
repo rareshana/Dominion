@@ -19,12 +19,14 @@ class Game():
 		self.starter()
 	
 	def starter(self):
-		for i in range(self.number): #各プレイヤーのデッキに銅貨を7枚、屋敷を3枚ずつ配る
+		for i in range(self.number): #各プレイヤーのデッキに銅貨を7枚、屋敷を3枚ずつ配る　その後、各々のデッキをシャッフルし、デッキから5枚引いて手札にする
 			copper = [Copper() for i in range(7)]
 			estate = [Estate() for i in range(3)]
 			self.player[i].deck.extend(copper)
 			self.player[i].deck.extend(estate)
-		
+			self.player[i].shuffle
+			self.player[i].draw(5)
+			
 		copperrest = numofcopper - self.number * 7
 		self.makesupply(copperrest, 2, Copper())#銅貨の山を作る
 		self.makesupply(numofsilver, 3, Silver())#銀貨の山を作る
@@ -41,12 +43,43 @@ class Game():
 		
 		self.makesupply((self.number-1)*numofcurse, 1, Curse()) #呪いの山を作る
 		
+		
+		
 	def makesupply(self, number, placenum, cardclass): #山札を作る(引数は、枚数、場所、カードを生成するコマンド)
 		cards = [cardclass for i in range(number)]
 		self.field.supnumber.get(placenum).pile.extend(cards)
 		self.field.supnumber.get(placenum).name = self.field.supnumber.get(placenum).pile[0].ename
 
+	def turnstart(self): 
+		pass
+	
+class Turn():
+	def __init__(self):
+		self.phaseset = iter([StartPhase(), ActionPhase(), TreasurePhase(), BuyPhase(), CleanUpPhase()])
+	
+		
+	
 
+class Phase():
+	pass
+
+class StartPhase(Phase):
+	pass
+	
+class ActionPhase(Phase):
+	pass
+	
+class TreasurePhase(Phase):
+	pass
+	
+class BuyPhase(Phase):
+	pass
+	
+class CleanUpPhase(Phase):
+	pass
+
+		
+		
 class Pile(): #サプライのカードの山
 	def __init__(self):
 		self.pile = [] #カードの山 下から上へ
@@ -82,10 +115,10 @@ class Player():
 	
 	def draw(self, number): #デッキからカードをnumber枚引く
 		if (number > len(self.deck)) and len(self.deck) > 0: #デッキの枚数が足りず、かつ捨て札があるとき
-			number = number - len(self.deck)
+			number -= len(self.deck)
 			self.hand.extend(self.deck[::-1])
 			self.deck.clear()
-			self.deck = self.deck + self.dispile
+			self.deck.extend(self.dispile)
 			self.dispile.clear()
 			self.shuffle()
 		drawcard = self.deck[-number:]
