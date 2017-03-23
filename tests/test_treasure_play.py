@@ -1,7 +1,7 @@
 import unittest
 import main
 
-class TestStarter1(unittest.TestCase): #3人プレイ時のサプライに積まれている勝利点カード3種の枚数を確認
+class TestTreasurePlay1(unittest.TestCase): #3人プレイ時のサプライに積まれている勝利点カード3種の枚数を確認
 	def setUp(self):
 		print('setUp')
 		self._game = main.Game(2)
