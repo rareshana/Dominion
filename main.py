@@ -69,7 +69,15 @@ class Field():
 		self.treasurepile = [Pile() for i in range(kindoftreasure)] #財宝置き場
 		self.victorypile = [Pile() for i in range(kindofvictoryc)] #勝利点カード置き場
 		self.actionpile = [Pile() for i in range(kindofaction)] #王国カード置き場
-		self.supnumber = {1:self.treasurepile, 2:self.victorypile}
+		
+		self.supnumber = {0:self.trash, 1:self.cursepile}
+		suptrenum = {(i+2):self.treasurepile[i] for i in range(3)}
+		supvicnum = {(i+5):self.victorypile[i] for i in range(3)}
+		supactnum = {(i+8):self.actionpile[i] for i in range(10)}
+		self.supnumber.update(suptrenum)
+		self.supnumber.update(supvicnum)
+		self.supnumber.update(supactnum) #サプライの場に番号を対応付けた
+		
 		
 class Player():
 	def __init__(self):
