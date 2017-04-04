@@ -5,6 +5,7 @@ class TestActionPhase(unittest.TestCase): #アクションフェイズでカー�
 	def setUp(self):
 		print('setUp')
 		self._game = main.Game(2)
+		self._game.beginturn(0)
 	
 	def test_play_copper(self): #銅貨をプレイしようとする
 		self._game.player[0].hand.append(main.Copper()) #銅貨を追加

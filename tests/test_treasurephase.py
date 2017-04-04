@@ -5,6 +5,7 @@ class TestTreasurePhase(unittest.TestCase): #財宝フェイズでカードを�
 	def setUp(self):
 		print('setUp')
 		self._game = main.Game(2)
+		self._game.beginturn(0)
 		self._game.player[0].phaseend()
 	
 	def test_play_copper(self): #銅貨をプレイしようとする

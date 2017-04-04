@@ -5,6 +5,7 @@ class TestBuyPhase(unittest.TestCase): #購入フェイズでカードをプレ�
 	def setUp(self):
 		print('setUp')
 		self._game = main.Game(2)
+		self._game.beginturn(0)
 		self._game.player[0].phaseend()
 		self._game.player[0].phaseend()
 	
