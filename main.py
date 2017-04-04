@@ -51,7 +51,7 @@ class Game():
 		self.field.supnumber.get(placenum).pile.extend(cards)
 		self.field.supnumber.get(placenum).name = self.field.supnumber.get(placenum).pile[0].ename
 
-	def beginturn(self, playernum): #numberに対応するプレイヤーのターンを開始する
+	def beginturn(self, playernum): #numに対応するプレイヤーのターンを開始する
 		turn = iter(Turn())
 		self.player[playernum].turn = turn
 		self.player[playernum].phase = next(self.player[playernum].turn)
@@ -62,7 +62,7 @@ class Turn():
 		yield TreasurePhase()
 		yield BuyPhase()
 		yield CleanUpPhase()
-	
+		
 class Phase():
 	def playable(self, card):
 		return False
@@ -78,7 +78,11 @@ class ActionPhase(Phase):
 		return hasattr(card, 'isaction')
 	
 class TreasurePhase(Phase):
-	pass
+	def __init__(self):
+		print("test 今は財宝フェイズです")
+	
+	def playable(self, card):
+		return hasattr(card, 'istreasure')
 	
 class BuyPhase(Phase):
 	pass
@@ -156,6 +160,9 @@ class Player():
 			self.coins -= boughtcard.cost #そのカードのコストを購入者の残り金から減算
 			self.restbuys -= 1 #購入権を1減らす
 			self.gaincard(number, field)
+			
+	def phaseend(self): #現在のフェーズを終了し、次のフェーズへ移行する
+		self.phase = next(self.turn)
 		
 
 class Card(): #カード

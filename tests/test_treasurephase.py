@@ -1,0 +1,26 @@
+import unittest
+import main
+
+class TestTreasurePhase(unittest.TestCase): #財宝フェイズでカードをプレイするときの挙動を確認する(すべて手札の6枚目にカードを追加してチェックします)
+	def setUp(self):
+		print('setUp')
+		self._game = main.Game(2)
+		self._game.player[0].phaseend()
+	
+	def test_play_copper(self): #銅貨をプレイしようとする
+		self._game.player[0].hand.append(main.Copper()) #銅貨を追加
+		self._game.player[0].playcard(5, "right") #銅貨をプレイしようとする
+		self.assertEqual(len(self._game.player[0].playarea),1) #場の枚数は1枚
+		self.assertEqual(len(self._game.player[0].hand), 5) #手札の残り枚数は5枚
+		self.assertEqual(self._game.player[0].coins, 1) #残りは1金
+		self.assertEqual(self._game.player[0].restactions, 1) #残りアクション権は1
+	
+	def test_play_estate(self): #屋敷をプレイしようとする
+		self._game.player[0].hand.append(main.Estate()) #屋敷を追加
+		self._game.player[0].playcard(5, "right") #屋敷をプレイしようとする
+		self.assertEqual(len(self._game.player[0].playarea),0) #場の枚数は0枚
+		self.assertEqual(len(self._game.player[0].hand), 6) #手札の残り枚数は6枚
+		self.assertEqual(self._game.player[0].coins, 0) #残りは0金
+		self.assertEqual(self._game.player[0].restactions, 1) #残りアクション権は1
+	
+	

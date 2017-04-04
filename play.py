@@ -2,6 +2,8 @@ import main
 
 game = main.Game(2) #２人プレイの設定
 
+game.player[0].phaseend()
+
 
 for i in range(5):
 	game.player[0].gaincard(5, game.field)
