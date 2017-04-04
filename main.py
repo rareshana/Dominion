@@ -43,6 +43,7 @@ class Game():
 		
 		self.makesupply((self.number-1)*numofcurse, 1, Curse()) #呪いの山を作る
 		
+		self.beginturn(0) #ターンを開始する
 		
 		
 	def makesupply(self, number, placenum, cardclass): #山札を作る(引数は、枚数、場所、カードを生成するコマンド)
@@ -50,24 +51,31 @@ class Game():
 		self.field.supnumber.get(placenum).pile.extend(cards)
 		self.field.supnumber.get(placenum).name = self.field.supnumber.get(placenum).pile[0].ename
 
-	def turnstart(self): 
-		pass
+	def beginturn(self, playernum): #numberに対応するプレイヤーのターンを開始する
+		turn = iter(Turn())
+		self.player[playernum].turn = turn
+		self.player[playernum].phase = next(self.player[playernum].turn)
 	
 class Turn():
-	def __init__(self):
-		self.phaseset = iter([StartPhase(), ActionPhase(), TreasurePhase(), BuyPhase(), CleanUpPhase()])
+	def __iter__(self):
+		yield ActionPhase()
+		yield TreasurePhase()
+		yield BuyPhase()
+		yield CleanUpPhase()
 	
-		
-	
-
 class Phase():
-	pass
+	def playable(self, card):
+		return False
 
 class StartPhase(Phase):
 	pass
-	
+
 class ActionPhase(Phase):
-	pass
+	def __init__(self):
+		print("test 今はアクションフェイズです")
+	
+	def playable(self, card):
+		return hasattr(card, 'isaction')
 	
 class TreasurePhase(Phase):
 	pass
@@ -78,7 +86,6 @@ class BuyPhase(Phase):
 class CleanUpPhase(Phase):
 	pass
 
-		
 		
 class Pile(): #サプライのカードの山
 	def __init__(self):
@@ -112,6 +119,8 @@ class Player():
 		self.coins = 0 #自分のターンに使える残り金数
 		self.restactions = 1 #自分のターンに使えるアクションの残り回数
 		self.restbuys = 1 #自分のターンで使用できる残り購入権
+		self.turn = 0 #各ターンを格納する
+		self.phase = Phase() #現在のフェーズを格納する
 	
 	def draw(self, number): #デッキからカードをnumber枚引く
 		if (number > len(self.deck)) and len(self.deck) > 0: #デッキの枚数が足りず、かつ捨て札があるとき
@@ -125,10 +134,11 @@ class Player():
 		self.deck = self.deck[:-number]
 		self.hand.extend(drawcard[::-1])
 	
-	def playcard(self, number): #カードは手札からプレイされる　手札の何枚目かをnumberとして与える
-		playedcard = self.hand.pop(number)
-		self.playarea.append(playedcard)#手札からカードを取り出して自分の場に出す
-		playedcard.played(self)
+	def playcard(self, number, when = None): #カードは手札からプレイされる　手札の何枚目かをnumberとして与える 正規のタイミングでカードをプレイするとき、whenに'right'を与えることにする
+		if (when is None) or (self.phase.playable(self.hand[number])):
+			playedcard = self.hand.pop(number)
+			self.playarea.append(playedcard)#手札からカードを取り出して自分の場に出す
+			playedcard.played(self)
 		
 	def shuffle(self): #デッキをシャッフルする
 		random.shuffle(self.deck)
