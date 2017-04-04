@@ -1,4 +1,5 @@
 import random
+import card
 
 numofcopper = 60
 numofsilver = 40
@@ -24,28 +25,28 @@ class Game():
 	
 	def starter(self):
 		for i in range(self.number): #各プレイヤーのデッキに銅貨を7枚、屋敷を3枚ずつ配る　その後、各々のデッキをシャッフルし、デッキから5枚引いて手札にする
-			copper = [Copper() for i in range(7)]
-			estate = [Estate() for i in range(3)]
+			copper = [card.Copper() for i in range(7)]
+			estate = [card.Estate() for i in range(3)]
 			self.player[i].deck.extend(copper)
 			self.player[i].deck.extend(estate)
 			self.player[i].shuffle()
 			self.player[i].draw(5)
 			
 		copperrest = numofcopper - self.number * 7
-		self.makesupply(copperrest, 2, Copper())#銅貨の山を作る
-		self.makesupply(numofsilver, 3, Silver())#銀貨の山を作る
-		self.makesupply(numofgold, 4, Gold())#金貨の山を作る
+		self.makesupply(copperrest, 2, card.Copper())#銅貨の山を作る
+		self.makesupply(numofsilver, 3, card.Silver())#銀貨の山を作る
+		self.makesupply(numofgold, 4, card.Gold())#金貨の山を作る
 	
 		if self.number == 2: #人数によって勝利点カードの枚数を制御
 			numofvict = numofvict2
 		elif self.number == 3 or self.number == 4:
 			numofvict = numofvict34
 		
-		self.makesupply(numofvict, 5, Estate())#屋敷の山を作る
-		self.makesupply(numofvict, 6, Duchy())#公領の山を作る
-		self.makesupply(numofvict, 7, Province())#属州の山を作る
+		self.makesupply(numofvict, 5, card.Estate())#屋敷の山を作る
+		self.makesupply(numofvict, 6, card.Duchy())#公領の山を作る
+		self.makesupply(numofvict, 7, card.Province())#属州の山を作る
 		
-		self.makesupply((self.number-1)*numofcurse, 1, Curse()) #呪いの山を作る
+		self.makesupply((self.number-1)*numofcurse, 1, card.Curse()) #呪いの山を作る
 		
 		
 	def makesupply(self, number, placenum, cardclass): #山札を作る(引数は、枚数、場所、カードを生成するコマンド)
@@ -288,73 +289,4 @@ class AIPlayer(Player):
 		else:
 			self.buycard(7, field)
 		
-
-class Card(): #カード
-	def __init__(self, ename, jname, cost, clas, type, set):
-		self.ename = ename #カードの名称(英語)
-		self.jname = jname #カードの名称(日本語)
-		self.cost = cost #コスト
-		self.clas = clas #カードの分類(基本カードとか王国カードとか)
-		self.type = type #カードの種類
-		self.set = set #拡張セット
-		
-	def played(self, user): #カードがプレイされた時の挙動
-		pass
-	
-	def gained(self, user): #カードが獲得された時の挙動
-		pass
-
-class TreasureCard(Card): #財宝カード
-	def __init__(self, ename, jname, cost, clas, type, set, value):
-		super().__init__(ename, jname, cost, clas, type, set)
-		self.coins = value
-		self.istreasure = 1 #財宝カードなら1
-		
-	def played(self, user): #財宝カードがプレイされると使用者の残り金数が増える
-		user.coins += self.coins
-
-class VictoryCard(Card): #勝利点カード
-	def __init__(self, ename, jname, cost, clas, type, set, value):
-		super().__init__(ename, jname, cost, clas, type, set)
-		self.vicpts = value
-		self.isvictory = 1 #勝利点カードなら1
-		
-class CurseCard(Card): #呪いカード
-	def __init__(self, ename, jname, cost, clas, type, set, value):
-		super().__init__(ename, jname, cost, clas, type, set)
-		self.vicpts = value
-		self.iscurse = 1 #呪いカードなら1
-		
-class ActionCard(Card): #アクションカード
-	def __init__(self, ename, jname, cost, clas, type, set):
-		super().__init__(ename, jname, cost, clas, type, set)
-		self.isaction = 1 #アクションカードなら1
-		
-class Copper(TreasureCard): #銅貨
-	def __init__(self):
-		super().__init__("Copper", "銅貨", 0, "基本", "財宝", "基本", 1)
-
-class Silver(TreasureCard): #銀貨
-	def __init__(self):
-		super().__init__("Silver", "銀貨", 3, "基本", "財宝", "基本", 2)
-
-class Gold(TreasureCard): #金貨
-	def __init__(self):
-		super().__init__("Gold", "金貨", 6, "基本", "財宝", "基本", 3)
-		
-class Estate(VictoryCard): #屋敷
-	def __init__(self):
-		super().__init__("Estate", "屋敷", 2, "基本", "勝利点", "基本", 1)
-		
-class Duchy(VictoryCard): #公領
-	def __init__(self):
-		super().__init__("Duchy", "公領", 5, "基本", "勝利点", "基本", 3)
-
-class Province(VictoryCard): #属州
-	def __init__(self):
-		super().__init__("Province", "属州", 8, "基本", "勝利点", "基本", 6)
-		
-class Curse(CurseCard): #呪い
-	def __init__(self):
-		super().__init__("Curse", "呪い", 0, "基本", "呪い", "基本", -1)
 

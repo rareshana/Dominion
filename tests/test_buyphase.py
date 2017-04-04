@@ -1,5 +1,6 @@
 import unittest
 import main
+import card
 
 class TestBuyPhase(unittest.TestCase): #購入フェイズでカードをプレイするときの挙動を確認する 適当に何金か持っていると仮定します
 	def setUp(self):

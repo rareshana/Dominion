@@ -1,5 +1,6 @@
 import unittest
 import main
+import card
 
 class TestCleanUpPhase(unittest.TestCase): #クリーンアップフェイズの挙動を確認する
 	def setUp(self):

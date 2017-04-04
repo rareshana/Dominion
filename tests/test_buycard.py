@@ -1,5 +1,6 @@
 import unittest
 import main
+import card
 
 class TestBuyCard1(unittest.TestCase): #カードをサプライから購入した際の挙動を確認
 	def setUp(self):
