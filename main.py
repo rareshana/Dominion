@@ -85,7 +85,8 @@ class TreasurePhase(Phase):
 		return hasattr(card, 'istreasure')
 	
 class BuyPhase(Phase):
-	pass
+	def __init__(self):
+		print("test 今は購入フェイズです")
 	
 class CleanUpPhase(Phase):
 	pass
@@ -156,7 +157,7 @@ class Player():
 	
 	def buycard(self, number, field):#カードは原則サプライから購入される　山札の番号をnumberとして与える。fieldの情報も与える。
 		boughtcard = field.supnumber.get(number).pile[0] #購入したいカードを変数に取得
-		if self.coins > boughtcard.cost:
+		if self.coins > boughtcard.cost and self.restbuys > 0:
 			self.coins -= boughtcard.cost #そのカードのコストを購入者の残り金から減算
 			self.restbuys -= 1 #購入権を1減らす
 			self.gaincard(number, field)
