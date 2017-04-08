@@ -1,11 +1,12 @@
 import unittest
 import main
 import card
+import play
 
 class TestTreasurePhase(unittest.TestCase): #財宝フェイズでカードをプレイするときの挙動を確認する(すべて手札の6枚目にカードを追加してチェックします)
 	def setUp(self):
 		print('setUp')
-		self._game = main.Game(2)
+		self._game = play.game_setup(2)
 		self._game.beginturn(0)
 		self._game.player[0].phaseend()
 	

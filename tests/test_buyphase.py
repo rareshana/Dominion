@@ -1,11 +1,12 @@
 import unittest
 import main
 import card
+import play
 
 class TestBuyPhase(unittest.TestCase): #購入フェイズでカードをプレイするときの挙動を確認する 適当に何金か持っていると仮定します
 	def setUp(self):
 		print('setUp')
-		self._game = main.Game(2)
+		self._game = play.game_setup(2)
 		self._game.beginturn(0)
 		self._game.player[0].phaseend()
 		self._game.player[0].phaseend()

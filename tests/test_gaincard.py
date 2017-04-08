@@ -1,10 +1,11 @@
 import unittest
 import main
+import play
 
 class TestGaincard1(unittest.TestCase): #カードをサプライから獲得した際の挙動を確認
 	def setUp(self):
 		print('setUp')
-		self._game = main.Game(2)
+		self._game = play.game_setup(2)
 	
 	def test_gain_copper(self): #銅貨を獲得する
 		self._game.player[0].gaincard(2, self._game.field)
@@ -21,7 +22,7 @@ class TestGaincard1(unittest.TestCase): #カードをサプライから獲得し
 class TestGaincard2(unittest.TestCase): #既にサプライにカードがないのにカードを獲得しようとした場合の挙動
 	def setUp(self):
 		print('setUp')
-		self._game = main.Game(2)
+		self._game = play.game_setup(2)
 		self._game.field.supnumber.get(2).pile.clear()
 		self._game.field.supnumber.get(5).pile.clear()#銅貨と屋敷のサプライの山を消す
 	

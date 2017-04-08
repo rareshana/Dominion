@@ -1,11 +1,12 @@
 import unittest
 import main
 import card
+import play
 
 class TestCleanUpPhase(unittest.TestCase): #クリーンアップフェイズの挙動を確認する
 	def setUp(self):
 		print('setUp')
-		self._game = main.Game(2)
+		self._game = play.game_setup(2)
 		self._game.beginturn(0)
 		self._game.player[0].phaseend()
 		self._game.player[0].phaseend()

@@ -1,10 +1,11 @@
 import unittest
 import main
+import play
 
 class TestDraw1(unittest.TestCase): #初期デッキから5枚引いた時の枚数を確認
 	def setUp(self):
 		print('setUp')
-		self._game = main.Game(2)
+		self._game = play.game_setup(2)
 		
 	def test_draw_handnumber(self): #手札の枚数チェック
 		self.assertEqual(len(self._game.player[0].hand), 5)
@@ -15,7 +16,7 @@ class TestDraw1(unittest.TestCase): #初期デッキから5枚引いた時の枚
 class TestDraw2(unittest.TestCase): #初期デッキから15枚引こうとした時の枚数を確認
 	def setUp(self):
 		print('setUp')
-		self._game = main.Game(2)
+		self._game = play.game_setup(2)
 		
 	def test_draw_handnumber(self): #手札の枚数チェック
 		self._game.player[0].draw(5)
@@ -30,7 +31,7 @@ class TestDraw2(unittest.TestCase): #初期デッキから15枚引こうとし�
 class TestDraw3(unittest.TestCase): #手札5枚、捨て札5枚、デッキ2枚の時に3枚ドローする時の枚数を確認
 	def setUp(self):
 		print('setUp')
-		self._game = main.Game(2)
+		self._game = play.game_setup(2)
 		for i in range(5):
 			self._game.player[0].gaincard(5, self._game.field)
 		del self._game.player[0].deck[2:]

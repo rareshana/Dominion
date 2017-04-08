@@ -14,18 +14,12 @@ kindofaction = 10 #王国カードの種類
 
 
 class Game():
-	def __init__(self, number, AInum=0):
+	def __init__(self, number):
 		self.number = number #参加人数
-		
-		self.player = [player.Player() for i in range(number-AInum)] #参加人数分のPlayerオブジェクトを生成
-		player2 = [player.AIPlayer() for i in range(AInum)]
-		self.player.extend(player2)
-	
-		
+		self.player = [] #参加プレイヤーはplay.pyで設定する
 		self.field = Field()#場を生成
 		self.turnplayer = 0
 		self.turncount = 1
-		self.starter()
 	
 	def starter(self):
 		for i in range(self.number): #各プレイヤーのデッキに銅貨を7枚、屋敷を3枚ずつ配る　その後、各々のデッキをシャッフルし、デッキから5枚引いて手札にする
@@ -81,10 +75,13 @@ class Game():
 			self.turncount += 1
 		self.endgame()
 		
-	def endgame(self):
+	def endgame(self):#勝利点が同じであるときは、よりターン数が少なかったプレイヤーの勝ち。
 		print("ゲーム終了です")
 		VP = [self.player[i].victorycount() for i in range(self.number)]
 		print(VP)
+
+		
+
 		
 class Field():
 	zeropile = 0 #0枚になったサプライの個数
@@ -123,6 +120,8 @@ class Turn():
 		yield BuyPhase(self.player, self.field)
 		yield CleanUpPhase(self.player, self.field)
 		
+		
+		
 class Phase():
 	def __init__(self, player):
 		self.player = player
@@ -132,6 +131,10 @@ class Phase():
 		
 	def start(self):
 		pass
+		
+	def rightplayed(self, when):
+		pass
+		
 
 class StartPhase(Phase):
 	def __init__(self, player):
@@ -140,18 +143,23 @@ class StartPhase(Phase):
 		self.player.restbuys = 1
 		self.player.coins = 0
 		
-
 class ActionPhase(Phase):
 	def __init__(self, player):
 		super().__init__(player)
 		print("アクションフェイズです")
 	
-	def start(self): 
+	def start(self):
+		if not self.player.handcheck('action'):
+			self.player.phaseend()
 		if self.player.isAI == 1: #AI用
 			self.player.phaseend() 
 	
 	def playable(self, card):
 		return hasattr(card, 'isaction')
+		
+	def rightplayed(self, when):
+		if when == 'right':
+			self.player.restactions -= 1 #カードがプレイされたらアクション権を1減らす
 	
 class TreasurePhase(Phase):
 	def __init__(self, player):

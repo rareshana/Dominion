@@ -1,11 +1,12 @@
 import unittest
 import main
 import card
+import play
 
 class TestTreasurePlay1(unittest.TestCase): #3人プレイ時のサプライに積まれている勝利点カード3種の枚数を確認
 	def setUp(self):
 		print('setUp')
-		self._game = main.Game(2)
+		self._game = play.game_setup(2)
 	
 	def test_play_copper(self): #銅貨をプレイする
 		copper=card.Copper()

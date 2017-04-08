@@ -1,3 +1,5 @@
+cardtype = {'action':'isaction', 'treasure':'istreasure', 'victory':'isvictory', 'curse':'iscurse'}
+
 class Card(): #カード
 	def __init__(self, ename, jname, cost, clas, type, set):
 		self.ename = ename #カードの名称(英語)
@@ -38,7 +40,7 @@ class ActionCard(Card): #アクションカード
 	def __init__(self, ename, jname, cost, clas, type, set):
 		super().__init__(ename, jname, cost, clas, type, set)
 		self.isaction = 1 #アクションカードなら1
-		
+	
 class Copper(TreasureCard): #銅貨
 	def __init__(self):
 		super().__init__("Copper", "銅貨", 0, "基本", "財宝", "基本", 1)
@@ -66,4 +68,62 @@ class Province(VictoryCard): #属州
 class Curse(CurseCard): #呪い
 	def __init__(self):
 		super().__init__("Curse", "呪い", 0, "基本", "呪い", "基本", -1)
+		
+class Smithy(ActionCard): #鍛冶屋
+	def __init__(self):
+		super().__init__("Smithy", "鍛冶屋", 4, "王国", "アクション", "基本")
+	
+	def played(self, user):
+		user.draw(3)
+	
+class Village(ActionCard): #村
+	def __init__(self):
+		super().__init__("Village", "村", 3, "王国", "アクション", "基本")
+	
+	def played(self, user):
+		user.draw(1)
+		user.plusactions(2)
 
+class Woodcutter(ActionCard): #木こり
+	def __init__(self):
+		super().__init__("WoodCutter", "木こり", 3, "王国", "アクション", "基本")
+		
+	def played(self, user):
+		user.plusbuys(1)
+		user.pluscoins(2)
+
+class Market(ActionCard): #市場
+	def __init__(self):
+		super().__init__("Market", "市場", 5, "王国", "アクション", "基本")
+		
+	def played(self, user):
+		user.draw(1)
+		user.plusactions(1)
+		user.plusbuys(1)
+		user.pluscoins(1)
+
+class Laboratory(ActionCard): #研究所
+	def __init__(self):
+		super().__init__("Laboratory", "研究所", 5, "王国", "アクション", "基本")
+		
+	def played(self, user):
+		user.draw(2)
+		user.plusactions(1)
+
+class Festival(ActionCard): #祝祭
+	def __init__(self):
+		super().__init__("Festival", "祝祭", 5, "王国", "アクション", "基本")
+		
+	def played(self, user):
+		user.plusactions(2)
+		user.plusbuys(1)
+		user.pluscoins(2)
+		
+class CouncilRoom(ActionCard): #議事堂
+	def __init__(self):
+		super().__init__("Council Room", "議事堂", 5, "王国", "アクション", "基本")
+	
+	def played(self, user):
+		user.draw(4)
+		user.plusbuys(1)
+		[x.draw(1) for x in user.others]

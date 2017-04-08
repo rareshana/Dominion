@@ -1,4 +1,6 @@
 import random
+import card
+import main
 
 class Player():
 	def __init__(self):
@@ -12,6 +14,7 @@ class Player():
 		self.turn = 0 #各ターンを格納する
 		self.phase = 0 #現在のフェーズを格納する
 		self.isAI = 0
+		self.others = []
 	
 	def draw(self, number): #デッキからカードをnumber枚引く
 		if (number > len(self.deck)) and len(self.deck) >= 0: #デッキの枚数が足りず、かつ捨て札があるとき
@@ -25,11 +28,15 @@ class Player():
 		self.deck = self.deck[:-number]
 		self.hand.extend(drawcard[::-1])
 	
-	def playcard(self, number, when = None): #カードは手札からプレイされる　手札の何枚目かをnumberとして与える 正規のタイミングでカードをプレイするとき、whenに'right'を与えることにする
+	def playcard(self, number, when = None): #カードは手札からプレイされる　手札の何枚目かをnumberとして与える 正規のタイミング(財宝フェイズに出す財宝、アクションフェイズにアクション権を消費して出すアクションカード)でカードをプレイするとき、whenに'right'を与えることにする
 		if (when is None) or (self.phase.playable(self.hand[number])):
 			playedcard = self.hand.pop(number)
 			self.playarea.append(playedcard)#手札からカードを取り出して自分の場に出す
+			self.phase.rightplayed(when)
 			playedcard.played(self)
+			if isinstance(self.phase, main.ActionPhase) and when is 'right' and self.restactions == 0: #処理終了後、アクションフェイズで残りアクション権が0ならばフェイズを自動的に終了する
+				self.phaseend()
+				
 			return True
 		else:
 			return False
@@ -66,8 +73,25 @@ class Player():
 				vp += self.deck[i].vicpts
 		
 		return vp
-	
 		
+	def handcheck(self, type):
+		number = len(self.hand)
+		typec = card.cardtype.get(type)
+		for i in range(number):
+			if hasattr(self.hand[i], typec):
+				return True
+				break
+		else:
+			return False
+			
+	def plusactions(self, number):
+		self.restactions += number
+	
+	def plusbuys(self, number):
+		self.restbuys += number
+		
+	def pluscoins(self, number):
+		self.coins += number
 		
 class AIPlayer(Player):
 	def __init__(self):
@@ -93,4 +117,10 @@ class AIPlayer(Player):
 		else:
 			self.buycard(7, field)
 		
+
+#任意のプレイヤーは捨て札の一番上のカードをいつでも見ることができる
+#プレイヤーはデッキの残り枚数を数えることができる
+#廃棄置き場のカードを確認することができる
+#サプライに残っているカードの枚数を確認できる
+
 
