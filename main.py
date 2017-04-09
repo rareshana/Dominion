@@ -171,7 +171,7 @@ class TreasurePhase(Phase):
 		if self.player.isAI == 1: #AI用
 			self.player.play_coins()
 			print(self.player.coins)
-		self.player.phaseend()
+			self.player.phaseend()
 	
 	def playable(self, card):
 		return hasattr(card, 'istreasure')
@@ -185,7 +185,7 @@ class BuyPhase(Phase):
 	def start(self):
 		if self.player.isAI == 1: #AI用
 			self.player.what_buy(self.field)
-		self.player.phaseend()
+			self.player.phaseend()
 	
 class CleanUpPhase(Phase):
 	def __init__(self, player, field):

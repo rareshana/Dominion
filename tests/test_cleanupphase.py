@@ -11,9 +11,7 @@ class TestCleanUpPhase(unittest.TestCase): #クリーンアップフェイズの
 		self._game.player[0].phaseend()
 		self._game.player[0].phaseend()
 		
-		
 	def test_cleanup(self): 
-		self._game.player[0].phaseend()
 		self.assertEqual(len(self._game.player[0].dispile), 5) 
 		self.assertEqual(len(self._game.player[0].hand), 5)
 		self.assertEqual(len(self._game.player[0].deck), 0)

@@ -8,8 +8,6 @@ class TestBuyPhase(unittest.TestCase): #購入フェイズでカードをプレ�
 		print('setUp')
 		self._game = play.game_setup(2)
 		self._game.beginturn(0)
-		self._game.player[0].phaseend()
-		self._game.player[0].phaseend()
 	
 	def test_buy_copper(self): #銅貨を購入する
 		self._game.player[0].coins = 3 #3金持っていると仮定する 
