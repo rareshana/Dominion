@@ -22,3 +22,5 @@ def playerdecide(playerr, people, nontest=None):
 		tmp = playerr[:]
 		tmp.remove(playerr[i])
 		playerr[i].others = tmp
+		
+	print(playerr)

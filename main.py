@@ -58,6 +58,7 @@ class Game():
 		turn = iter(Turn(self.player[playernum], self.field))
 		self.player[playernum].turn = turn
 		self.player[playernum].phase = next(self.player[playernum].turn) #Start
+		
 		self.player[playernum].phase = next(self.player[playernum].turn) #Action
 		self.player[playernum].phase.start()#Action
 		self.player[playernum].phase.start()#Treasure
@@ -67,7 +68,7 @@ class Game():
 		self.turnplayer = (self.turnplayer + 1) % self.number
 		
 	def begingame(self):
-		while True: #最終的にはWhile Trueにするよ
+		while True: 
 			self.beginturn(self.turnplayer)
 			if self.field.is_game_set():
 				break
@@ -151,7 +152,7 @@ class ActionPhase(Phase):
 	def start(self):
 		if not self.player.handcheck('action'):
 			self.player.phaseend()
-		if self.player.isAI == 1: #AI用
+		elif self.player.isAI == 1: #AI用
 			self.player.phaseend() 
 	
 	def playable(self, card):
