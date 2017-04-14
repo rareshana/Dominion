@@ -2,6 +2,7 @@ import main
 import random
 import card
 import player
+import aiplayer
 
 def game_setup(number, nontest=None):
 	game = main.Game(number)
@@ -13,7 +14,7 @@ def playerdecide(playerr, people, nontest=None):
 	if nontest == None:
 		testplayer=[player.Player(), player.Player(), player.Player(), player.Player()]
 	else:
-		testplayer=[player.AIPlayer(), player.AIPlayer(), player.AIPlayer(), player.AIPlayer()]
+		testplayer=[aiplayer.AIPlayer1(), aiplayer.AIPlayer1(), aiplayer.AIPlayer1(), aiplayer.AIPlayer1()]
 	
 	for i in range(people):
 		playerr.append(testplayer[i])
