@@ -173,6 +173,8 @@ class TreasurePhase(Phase):
 			self.player.play_coins()
 			print(self.player.coins)
 			self.player.phaseend()
+		elif self.player.isAI == 0: 
+			pass
 	
 	def playable(self, card):
 		return hasattr(card, 'istreasure')
