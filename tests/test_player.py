@@ -33,7 +33,7 @@ class TestDraw3(unittest.TestCase): #手札5枚、捨て札5枚、デッキ2枚�
 		print('setUp')
 		self._game = play.game_setup(2)
 		for i in range(5):
-			self._game.player[0].gaincard(5, self._game.field)
+			self._game.player[0].gaincard(5)
 		del self._game.player[0].deck[2:]
 		
 	def test_draw_handnumber(self): #手札の枚数チェック

@@ -3,7 +3,7 @@ import card
 import main
 
 class Player():
-	def __init__(self):
+	def __init__(self, game):
 		self.deck = [] #デッキ 下から上へ
 		self.hand = [] #手札 左から右へ
 		self.dispile = [] #捨て札の山 下から上へ
@@ -15,6 +15,7 @@ class Player():
 		self.phase = 0 #現在のフェーズを格納する
 		self.isAI = 0
 		self.others = []
+		self.game = game
 	
 	def draw(self, number): #デッキからカードをnumber枚引く
 		if (number > len(self.deck)) and len(self.deck) >= 0: #デッキの枚数が足りず、かつ捨て札があるとき
@@ -44,20 +45,20 @@ class Player():
 	def shuffle(self): #デッキをシャッフルする
 		random.shuffle(self.deck)
 	
-	def gaincard(self, number, field): #カードは原則サプライから獲得される　山札の番号をnumberとして与える。それだけだと情報が足りないので、fieldの情報も与えなければ……
-		place = field.supnumber.get(number)
+	def gaincard(self, number): #カードは原則サプライから獲得される　山札の番号をnumberとして与える。それだけだと情報が足りないので、fieldの情報も与えなければ……
+		place = self.game.field.supnumber.get(number)
 		if place.pile: #山札が切れていない場合のみ獲得できる
 			gainedcard = place.pile.pop()
 			self.dispile.append(gainedcard)
 			gainedcard.gained(self)
-			place.zerocheck(field)
+			place.zerocheck(self.game.field)
 	
-	def buycard(self, number, field):#カードは原則サプライから購入される　山札の番号をnumberとして与える。fieldの情報も与える。
-		boughtcard = field.supnumber.get(number).pile[0] #購入したいカードを変数に取得
+	def buycard(self, number):#カードは原則サプライから購入される　山札の番号をnumberとして与える。fieldの情報も与える。
+		boughtcard = self.game.field.supnumber.get(number).pile[0] #購入したいカードを変数に取得
 		if self.coins >= boughtcard.cost and self.restbuys > 0:
 			self.coins -= boughtcard.cost #そのカードのコストを購入者の残り金から減算
 			self.restbuys -= 1 #購入権を1減らす
-			self.gaincard(number, field)
+			self.gaincard(number)
 			print(boughtcard.jname)
 			
 	def phaseend(self): #現在のフェーズを終了し、次のフェーズへ移行する
