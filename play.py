@@ -6,15 +6,16 @@ import aiplayer
 
 def game_setup(number, nontest=None):
 	game = main.Game(number)
-	playerdecide(game.player, game.number, nontest)
+	playerdecide(game, game.player, game.number, nontest)
 	game.starter()
 	return game
 
-def playerdecide(playerr, people, nontest=None):
+def playerdecide(game, playerr, people, nontest=None):
 	if nontest == None:
-		testplayer=[player.Player(), player.Player(), player.Player(), player.Player()]
+		testplayer=[player.Player(game), player.Player(game), player.Player(game), player.Player(game)]
 	else:
-		testplayer=[aiplayer.AIPlayer1(), aiplayer.AIPlayer1(), aiplayer.AIPlayer1(), aiplayer.AIPlayer1()]
+
+		testplayer=[aiplayer.AIPlayer(game), aiplayer.AIPlayer(game), aiplayer.AIPlayer(game), aiplayer.AIPlayer(game)]
 	
 	for i in range(people):
 		playerr.append(testplayer[i])
@@ -23,5 +24,3 @@ def playerdecide(playerr, people, nontest=None):
 		tmp = playerr[:]
 		tmp.remove(playerr[i])
 		playerr[i].others = tmp
-		
-	print(playerr)

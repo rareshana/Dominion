@@ -1,8 +1,8 @@
 import player
 
 class AIPlayer1(player.Player): #‚¨‹àƒvƒŒƒC
-	def __init__(self):
-		super().__init__()
+	def __init__(self, game):
+		super().__init__(game)
 		self.isAI = 1
 		
 	def play_coins(self):
