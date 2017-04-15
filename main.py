@@ -188,7 +188,7 @@ class BuyPhase(Phase):
 	
 	def start(self):
 		if self.player.isAI == 1: #AI用
-			self.player.what_buy(self.field, self.)
+			self.player.what_buy()
 			self.player.phaseend()
 	
 class CleanUpPhase(Phase):

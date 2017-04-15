@@ -14,15 +14,15 @@ class AIPlayer1(player.Player): #お金プレイ
 				break
 			i += 1
 			
-	def what_buy(self, field):
+	def what_buy(self):
 		if self.coins < 3:
 			pass
 		elif self.coins < 6:
-			self.buycard(3, field)
+			self.buycard(3)
 		elif self.coins < 8:
-			self.buycard(4, field)
+			self.buycard(4)
 		else:
-			self.buycard(7, field)
+			self.buycard(7)
 			
 	def what_action(self):
 		pass
@@ -48,13 +48,13 @@ class AIPlayer2(player.Player): #鍛冶屋ステロ
 				break
 			i += 1
 			
-	def what_buy(self, field, turncount):
+	def what_buy(self):
 		if self.coins < 3:
 			pass
 		elif self.coins < 6:
-			self.buycard(3, field)
+			self.buycard(3)
 		elif self.coins < 8:
-			self.buycard(4, field)
+			self.buycard(4)
 		else:
-			self.buycard(7, field)
+			self.buycard(7)
 					
