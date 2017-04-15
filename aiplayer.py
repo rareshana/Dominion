@@ -28,9 +28,10 @@ class AIPlayer1(player.Player): #お金プレイ
 		pass
 
 class AIPlayer2(player.Player): #鍛冶屋ステロ
-	def __init__(self):
-		super().__init__()
+	def __init__(self, game):
+		super().__init__(game)
 		self.isAI = 1
+		self.smithycount = 0
 		
 	def play_coins(self):
 		i = 0
