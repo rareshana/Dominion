@@ -93,6 +93,7 @@ class Player():
 		
 	def pluscoins(self, number):
 		self.coins += number
+	
 		
 
 
