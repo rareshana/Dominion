@@ -3,12 +3,12 @@ import main
 import card
 import play
 
-class TestCouncilRoom(unittest.TestCase): #アクションフェイズで議事堂をプレイするときの挙動を確認する(す手札の6枚目にカードを追加してチェックします)
+class TestCouncilRoom(unittest.TestCase): #アクションフェイズで議事堂をプレイするときの挙動を確認する(手札の6枚目にカードを追加してチェックします)
 	def setUp(self):
 		print('setUp')
-		self._game = play.game_setup()
+		self._game = play.game_setup(2)
 
-def test_play_councilroom(self):
+	def test_play_councilroom(self):
 		self._game.player[0].hand.append(card.CouncilRoom()) 
 		self._game.beginturn(0)
 		self._game.player[0].playcard(5, "right")

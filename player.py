@@ -14,6 +14,7 @@ class Player():
 		self.turn = 0 #各ターンを格納する
 		self.phase = 0 #現在のフェーズを格納する
 		self.isAI = 0
+		self.isHuman = 0
 		self.others = []
 		self.game = game
 	
@@ -60,7 +61,13 @@ class Player():
 			self.restbuys -= 1 #購入権を1減らす
 			self.gaincard(number)
 			print(boughtcard.jname)
-			
+	
+	def trashcard(self, object, place):
+		number = place.index(object)
+		trashedcard = place.pop(number)
+		self.game.field.trash.append(trashedcard)
+		trashaedcard.trashed(self)
+		
 	def phaseend(self): #現在のフェーズを終了し、次のフェーズへ移行する
 		self.phase = next(self.turn)
 		
@@ -95,13 +102,16 @@ class Player():
 		self.coins += number
 		
 	def what_action(self):
-		pass
+		self.phaseend()
 		
 	def what_buy(self):
 		pass
 		
 	def chancellor(self):
 		return 'n'
+	
+	def what_gain(self, number):
+		pass
 	
 class HumanPlayer(Player):
 	def __init__(self, game):
@@ -115,6 +125,13 @@ class HumanPlayer(Player):
 		else:
 			self.playcard(number, 'right')
 			return False
+			
+	def what_action(self):
+		number = int(input())
+		if number == -1:
+			self.phaseend()
+		else:
+			self.playcard(number, 'right')
 			
 	def what_buy(self):
 		number = int(input())
@@ -132,6 +149,18 @@ class HumanPlayer(Player):
 			else:
 				print("yまたはnで答えてください")
 		return answer
+		
+	def what_gain(self, number):
+		print("{0}コスト以下のカードを獲得します".format(number))
+		while True:
+			answer = input()
+			place = self.game.field.supnumber.get(answer)
+			if place.cost <= 4:
+				self.gaincard(answer)
+				break
+			else:
+				print("コストが高すぎます")
+			
 
 #任意のプレイヤーは捨て札の一番上のカードをいつでも見ることができる
 #プレイヤーはデッキの残り枚数を数えることができる

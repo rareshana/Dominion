@@ -14,6 +14,9 @@ class Card(): #カード
 	
 	def gained(self, user): #カードが獲得された時の挙動
 		pass
+	
+	def trashed(self, user):  #カードが廃棄された時の挙動
+		pass
 
 class TreasureCard(Card): #財宝カード
 	def __init__(self, ename, jname, cost, clas, type, set, value):
@@ -140,4 +143,12 @@ class Chancellor(ActionCard): #宰相
 			user.deck.clear()
 		elif answer == 'n':
 			pass
+
+class Feast(ActionCard):
+	def __init__(self):
+		super().__init__("Feast", "祝宴", 4, "王国", "アクション", "基本")
+	
+	def played(self, user):
+		user.trashcard(self, playarea)
+		user.what_gain(4)
 		

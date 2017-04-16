@@ -7,7 +7,8 @@ import aiplayer
 def game_setup(number, nontest=None):
 	game = main.Game(number)
 	playerdecide(game, game.player, game.number, nontest)
-	game.starter()
+	supply = supplydecide()
+	game.starter(supply)
 	return game
 
 def playerdecide(game, playerr, people, nontest=None):
@@ -23,3 +24,6 @@ def playerdecide(game, playerr, people, nontest=None):
 		tmp = playerr[:]
 		tmp.remove(playerr[i])
 		playerr[i].others = tmp
+
+def supplydecide():
+	return [card.Smithy, card.Village, card.Woodcutter, card.Market, card.Laboratory, card.Festival, card.CouncilRoom, card.Chancellor, card.Feast]

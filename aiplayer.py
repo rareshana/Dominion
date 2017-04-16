@@ -23,9 +23,6 @@ class AIPlayer1(player.Player):#お金プレイ
 			self.buycard(4)
 		else:
 			self.buycard(7)
-			
-	def what_action(self):
-		pass
 
 class AIPlayer2(player.Player): #鍛冶屋ステロ
 	def __init__(self, game):
@@ -43,11 +40,10 @@ class AIPlayer2(player.Player): #鍛冶屋ステロ
 				break
 			i += 1
 			
-	def play_action(self):
+	def what_action(self):
 		i = 0
 		while i < len(self.hand):
 			if self.playcard(i, 'right'):
-				print("test")
 				break
 			i += 1
 			
