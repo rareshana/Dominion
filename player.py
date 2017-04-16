@@ -35,8 +35,8 @@ class Player():
 			self.playarea.append(playedcard)#手札からカードを取り出して自分の場に出す
 			self.phase.rightplayed(when)
 			playedcard.played(self)
-			#if isinstance(self.phase, main.ActionPhase) and when is 'right' and self.restactions == 0: #処理終了後、アクションフェイズで残りアクション権が0ならばフェイズを自動的に終了する
-				#self.phaseend()
+			if isinstance(self.phase, main.ActionPhase) and when is 'right' and self.restactions == 0: #処理終了後、アクションフェイズで残りアクション権が0ならばフェイズを自動的に終了する
+				self.phaseend()
 				
 			return True
 		else:

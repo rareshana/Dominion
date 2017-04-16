@@ -155,11 +155,11 @@ class ActionPhase(Phase):
 		print("アクションフェイズです")
 	
 	def start(self):
-		if not self.player.handcheck('action'):
-			self.player.phaseend()
-		elif self.player.isAI == 1: #AI用
-			self.player.play_action()
-			self.player.phaseend() 
+		while (isinstance(self.player.phase, ActionPhase)):
+			if not self.player.handcheck('action'):
+				self.player.phaseend()
+			elif self.player.isAI == 1: #AI用
+				self.player.play_action()
 	
 	def playable(self, card):
 		return hasattr(card, 'isaction')
