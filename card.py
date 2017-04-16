@@ -149,6 +149,6 @@ class Feast(ActionCard):
 		super().__init__("Feast", "祝宴", 4, "王国", "アクション", "基本")
 	
 	def played(self, user):
-		user.trashcard(self, playarea)
-		user.what_gain(4)
+		user.trashcard(self, user.playarea)
+		user.what_gain(5)
 		

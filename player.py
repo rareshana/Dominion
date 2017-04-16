@@ -66,7 +66,7 @@ class Player():
 		number = place.index(object)
 		trashedcard = place.pop(number)
 		self.game.field.trash.append(trashedcard)
-		trashaedcard.trashed(self)
+		trashedcard.trashed(self)
 		
 	def phaseend(self): #現在のフェーズを終了し、次のフェーズへ移行する
 		self.phase = next(self.turn)
@@ -153,9 +153,9 @@ class HumanPlayer(Player):
 	def what_gain(self, number):
 		print("{0}コスト以下のカードを獲得します".format(number))
 		while True:
-			answer = input()
+			answer = int(input())
 			place = self.game.field.supnumber.get(answer)
-			if place.cost <= 4:
+			if place.cost <= number:
 				self.gaincard(answer)
 				break
 			else:
