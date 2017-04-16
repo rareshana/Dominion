@@ -99,6 +99,9 @@ class Player():
 		
 	def what_buy(self):
 		pass
+		
+	def chancellor(self):
+		return 'n'
 	
 class HumanPlayer(Player):
 	def __init__(self, game):
@@ -120,8 +123,15 @@ class HumanPlayer(Player):
 		else:
 			self.buycard(number)
 		
-	
-
+	def chancellor(self):
+		print("山札をすべて捨て札にしますか y/n")
+		while True:
+			answer = input()
+			if answer == 'y' or answer == 'n':
+				break
+			else:
+				print("yまたはnで答えてください")
+		return answer
 
 #任意のプレイヤーは捨て札の一番上のカードをいつでも見ることができる
 #プレイヤーはデッキの残り枚数を数えることができる

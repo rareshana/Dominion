@@ -127,3 +127,17 @@ class CouncilRoom(ActionCard): #議事堂
 		user.draw(4)
 		user.plusbuys(1)
 		[x.draw(1) for x in user.others]
+
+class Chancellor(ActionCard): #宰相
+	def __init__(self):
+		super().__init__("Chancellor", "宰相", 3, "王国", "アクション", "基本")
+	
+	def played(self, user):
+		user.pluscoins(2)
+		answer = user.chancellor()
+		if answer == 'y':
+			user.dispile.extend(user.deck[::-1])
+			user.deck.clear()
+		elif answer == 'n':
+			pass
+		
