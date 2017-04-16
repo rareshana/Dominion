@@ -153,6 +153,7 @@ class ActionPhase(Phase):
 		if not self.player.handcheck('action'):
 			self.player.phaseend()
 		elif self.player.isAI == 1: #AI用
+			self.player.play_action()
 			self.player.phaseend() 
 	
 	def playable(self, card):
@@ -187,7 +188,7 @@ class BuyPhase(Phase):
 	
 	def start(self):
 		if self.player.isAI == 1: #AI用
-			self.player.what_buy(self.field)
+			self.player.what_buy(self.field, self.)
 			self.player.phaseend()
 	
 class CleanUpPhase(Phase):

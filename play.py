@@ -14,7 +14,8 @@ def playerdecide(game, playerr, people, nontest=None):
 	if nontest == None:
 		testplayer=[player.Player(game), player.Player(game), player.Player(game), player.Player(game)]
 	else:
-		testplayer=[aiplayer.AIPlayer(game), aiplayer.AIPlayer(game), aiplayer.AIPlayer(game), aiplayer.AIPlayer(game)]
+		testplayer=[aiplayer.AIPlayer1(game), aiplayer.AIPlayer2(game), aiplayer.AIPlayer1(game), aiplayer.AIPlayer1(game)]
+
 	
 	for i in range(people):
 		playerr.append(testplayer[i])
