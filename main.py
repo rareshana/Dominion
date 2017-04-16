@@ -160,6 +160,8 @@ class ActionPhase(Phase):
 				self.player.phaseend()
 			elif self.player.isAI == 1: #AI用
 				self.player.play_action()
+			elif self.player.isHuman == 1:
+				self.player.what_action()
 	
 	def playable(self, card):
 		return hasattr(card, 'isaction')
@@ -179,6 +181,17 @@ class TreasurePhase(Phase):
 			self.player.play_coins()
 			print(self.player.coins)
 			self.player.phaseend()
+			
+		elif self.player.isHuman == 1:
+			while True:
+				prints = [print(i.jname) for i in self.player.hand]
+				print("使用する財宝カードの番号を入力してください")
+				isbreak = self.player.what_coin_play()
+				if isbreak == -1:
+					print(self.player.coins)
+					break
+			self.player.phaseend()
+		
 		elif self.player.isAI == 0: #プレイヤ用
 			pass
 			
@@ -192,9 +205,19 @@ class BuyPhase(Phase):
 		self.field = field
 	
 	def start(self):
-		if self.player.isAI == 1: #AI用
-			self.player.what_buy()
-			self.player.phaseend()
+		while (isinstance(self.player.phase, BuyPhase)):
+			if self.player.isAI == 1: #AI用
+				if self.player.restbuys > 0:
+					self.player.what_buy()
+				else:
+					self.player.phaseend()
+			elif self.player.isHuman == 1:
+				if self.player.restbuys > 0:
+					print("購入するカードの番号を入力してください")
+					self.player.what_buy()
+				else:
+					self.player.phaseend()
+					
 	
 class CleanUpPhase(Phase):
 	def __init__(self, player, field):

@@ -16,7 +16,7 @@ class AIPlayer1(player.Player):#お金プレイ
 			
 	def what_buy(self):
 		if self.coins < 3:
-			pass
+			self.phaseend()
 		elif self.coins < 6:
 			self.buycard(3)
 		elif self.coins < 8:
@@ -56,7 +56,7 @@ class AIPlayer2(player.Player): #鍛冶屋ステロ
 			self.smithyindex = [x.name for x in self.game.field.actionpile].index("Smithy") + 8
 		
 		if self.coins < 3:
-			pass
+			self.phaseend()
 		elif self.coins == 3:
 			self.buycard(3)
 		elif self.coins < 6 and self.smithycount == 0 and self.smithyindex != -1:

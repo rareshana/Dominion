@@ -53,7 +53,7 @@ class Player():
 			gainedcard.gained(self)
 			place.zerocheck(self.game.field)
 	
-	def buycard(self, number):#カードは原則サプライから購入される　山札の番号をnumberとして与える。fieldの情報も与える。
+	def buycard(self, number):#カードは原則サプライから購入される　山札の番号をnumberとして与える。
 		boughtcard = self.game.field.supnumber.get(number).pile[0] #購入したいカードを変数に取得
 		if self.coins >= boughtcard.cost and self.restbuys > 0:
 			self.coins -= boughtcard.cost #そのカードのコストを購入者の残り金から減算
@@ -93,8 +93,34 @@ class Player():
 		
 	def pluscoins(self, number):
 		self.coins += number
-	
 		
+	def what_action(self):
+		pass
+		
+	def what_buy(self):
+		pass
+	
+class HumanPlayer(Player):
+	def __init__(self, game):
+		super().__init__(game)
+		self.isHuman = 1
+		
+	def what_coin_play(self):
+		number = int(input())
+		if number == -1:
+			return -1
+		else:
+			self.playcard(number, 'right')
+			return False
+			
+	def what_buy(self):
+		number = int(input())
+		if number == -1:
+			self.phaseend()
+		else:
+			self.buycard(number)
+		
+	
 
 
 #任意のプレイヤーは捨て札の一番上のカードをいつでも見ることができる
