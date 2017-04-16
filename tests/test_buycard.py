@@ -26,7 +26,7 @@ class TestBuyCard1(unittest.TestCase): #カードをサプライから購入し�
 		self.assertEqual(self._game.player[0].coins, 1) #残りは1金
 		self.assertEqual(self._game.player[0].restbuys, 0) #残り購入権は0
 		
-	def test_buy_silver(self): #銅貨を購入する
+	def test_buy_silver(self): #銀貨を購入する
 		self._game.player[0].buycard(3)
 		self.assertEqual(len(self._game.player[0].dispile),1) #捨て札の枚数は1枚
 		self.assertEqual(len(self._game.field.supnumber.get(3).pile), 39) #銀貨の残り枚数は39枚
@@ -41,3 +41,12 @@ class TestBuyCard1(unittest.TestCase): #カードをサプライから購入し�
 		self.assertEqual(self._game.player[0].dispile, []) #捨て札には何もない
 		self.assertEqual(self._game.player[0].coins, 3) #残りは3金
 		self.assertEqual(self._game.player[0].restbuys, 1) #残り購入権は1
+	
+	def test_buy_smithy(self): #鍛冶屋を購入する
+		self._game.player[0].coins += 1
+		self._game.player[0].buycard(8)
+		self.assertEqual(len(self._game.player[0].dispile),1) #捨て札の枚数は1枚
+		self.assertEqual(len(self._game.field.supnumber.get(8).pile), 9) #鍛冶屋の残り枚数は9枚
+		self.assertEqual(self._game.player[0].dispile[0].ename, "Smithy") #捨て札にあるのは今獲得した鍛冶屋
+		self.assertEqual(self._game.player[0].coins, 0) #残りは0金
+		self.assertEqual(self._game.player[0].restbuys, 0) #残り購入権は0	

@@ -7,6 +7,7 @@ numofsilver = 40
 numofgold = 30
 numofvict2 = 8
 numofvict34 = 12
+numofact = 10
 numofcurse = 10 #参加者一人当たりの呪いの枚数
 kindoftreasure = 3 #財宝カードの種類
 kindofvictoryc = 3 #基本勝利点カードの種類
@@ -46,6 +47,8 @@ class Game():
 		
 		self.makesupply((self.number-1)*numofcurse, 1, card.Curse()) #呪いの山を作る
 		
+		self.makesupply(numofact, 8, card.Smithy())#鍛冶屋の山を作る
+		
 		
 	def makesupply(self, number, placenum, cardclass): #山札を作る(引数は、枚数、場所、カードを生成するコマンド)
 		cards = [cardclass for i in range(number)]
@@ -61,7 +64,9 @@ class Game():
 		
 		self.player[playernum].phase = next(self.player[playernum].turn) #Action
 		self.player[playernum].phase.start()#Action
+		print("test2")
 		self.player[playernum].phase.start()#Treasure
+		print("test3")
 		self.player[playernum].phase.start()#Buy
 		
 	def changeturn(self):
