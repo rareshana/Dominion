@@ -8,11 +8,13 @@ class AIPlayer1(player.Player):#‚¨‹àƒvƒŒƒC
 	def play_coins(self):
 		i = 0
 		while i < len(self.hand):
-			if self.playcard(i, 'right'):
-				i -= 1
-			if i+1 >= len(self.hand):
-				break
+			i = self.when_playable_coin(i)
 			i += 1
+	def when_playable_coin(self, number):
+		if self.playcard(number, 'right'):
+			return (number - 1)
+		else:
+			return number
 			
 	def what_buy(self):
 		if self.coins < 3:
