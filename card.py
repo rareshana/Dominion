@@ -17,6 +17,16 @@ class Card(): #カード
 	
 	def trashed(self, user):  #カードが廃棄された時の挙動
 		pass
+		
+	def is_type(self, type):
+		if hasattr(self, type):
+			return True
+	
+	def is_victory_or_curse(self):
+		if hasattr(self, 'isvictory') or hasattr(self, 'iscurse'):
+			return True
+		else:
+			return False
 
 class TreasureCard(Card): #財宝カード
 	def __init__(self, ename, jname, cost, clas, type, set, value):
@@ -137,7 +147,7 @@ class Chancellor(ActionCard): #宰相
 	
 	def played(self, user):
 		user.pluscoins(2)
-		answer = user.chancellor()
+		answer = user.chancellor_effect()
 		if answer == 'y':
 			user.dispile.extend(user.deck[::-1])
 			user.deck.clear()
@@ -150,5 +160,5 @@ class Feast(ActionCard):
 	
 	def played(self, user):
 		user.trashcard(self, user.playarea)
-		user.what_gain(5)
+		user.what_gain_undercost(5)
 		

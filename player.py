@@ -36,12 +36,14 @@ class Player():
 			self.playarea.append(playedcard)#手札からカードを取り出して自分の場に出す
 			self.phase.rightplayed(when)
 			playedcard.played(self)
-			if isinstance(self.phase, main.ActionPhase) and when is 'right' and self.restactions == 0: #処理終了後、アクションフェイズで残りアクション権が0ならばフェイズを自動的に終了する
-				self.phaseend()
-				
+			self.is_phaseend(when)  #処理終了後、アクションフェイズで残りアクション権が0ならばフェイズを自動的に終了する	
 			return True
 		else:
 			return False
+	
+	def is_phaseend(self, when):
+		if isinstance(self.phase, main.ActionPhase) and when is 'right' and self.restactions == 0: 
+			self.phaseend()
 		
 	def shuffle(self): #デッキをシャッフルする
 		random.shuffle(self.deck)
@@ -76,22 +78,19 @@ class Player():
 		self.deck.extend(self.dispile)
 		self.deck.extend(self.hand)
 		self.deck.extend(self.playarea)
-		for i in range(len(self.deck)):
-			if hasattr(self.deck[i], 'isvictory') or hasattr(self.deck[i], 'iscurse'):
-				vp += self.deck[i].vicpts
-		
-		return vp
+		vp = sum([i.vicpts for i in self.deck if i.is_victory_or_curse()])
+		return vp	
 		
 	def handcheck(self, type):
-		number = len(self.hand)
 		typec = card.cardtype.get(type)
-		for i in range(number):
-			if hasattr(self.hand[i], typec):
-				return True
-				break
-		else:
-			return False
-			
+		type_cards = [x for x in self.hand if hasattr(x, typec)]
+		number = len(type_cards)
+		return number
+		#for i in range(number):
+			#if hasattr(self.hand[i], typec):
+				#return True
+		#return False
+	
 	def plusactions(self, number):
 		self.restactions += number
 	
@@ -107,7 +106,7 @@ class Player():
 	def what_buy(self):
 		pass
 		
-	def chancellor(self):
+	def chancellor_effect(self):
 		return 'n'
 	
 	def what_gain(self, number):
@@ -140,27 +139,37 @@ class HumanPlayer(Player):
 		else:
 			self.buycard(number)
 		
-	def chancellor(self):
+	def chancellor_effect(self):
 		print("山札をすべて捨て札にしますか y/n")
-		while True:
+		flag = 1
+		while flag:
 			answer = input()
-			if answer == 'y' or answer == 'n':
-				break
-			else:
-				print("yまたはnで答えてください")
+			flag = self.input_y_or_n(answer)
 		return answer
 		
-	def what_gain(self, number):
+	def input_y_or_n(self, answer):
+		if answer == 'y' or answer == 'n':
+			return 0
+		else:
+			print("yまたはnで答えてください")
+			return 1
+				
+	def what_gain_undercost(self, number):
 		print("{0}コスト以下のカードを獲得します".format(number))
-		while True:
+		flag = 1
+		while flag:
 			answer = int(input())
 			place = self.game.field.supnumber.get(answer)
-			if place.cost <= number:
-				self.gaincard(answer)
-				break
-			else:
-				print("コストが高すぎます")
-			
+			flag = self.gainable(answer, place, number)
+				
+	def gainable(self, answer, place, number):
+		if place.cost <= number:
+			self.gaincard(answer)
+			return 0
+		else:
+			print("コストが高すぎます")
+			return 1
+
 
 #任意のプレイヤーは捨て札の一番上のカードをいつでも見ることができる
 #プレイヤーはデッキの残り枚数を数えることができる
