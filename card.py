@@ -17,6 +17,16 @@ class Card(): #カード
 	
 	def trashed(self, user):  #カードが廃棄された時の挙動
 		pass
+		
+	def is_type(self, type):
+		if hasattr(self, type):
+			return True
+	
+	def is_victory_or_curse(self):
+		if hasattr(self, 'isvictory') or hasattr(self, 'iscurse'):
+			return True
+		else:
+			return False
 
 class TreasureCard(Card): #財宝カード
 	def __init__(self, ename, jname, cost, clas, type, set, value):

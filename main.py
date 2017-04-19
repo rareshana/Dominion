@@ -73,13 +73,20 @@ class Game():
 		self.turnplayer = (self.turnplayer + 1) % self.number
 		
 	def begingame(self):
-		while True: 
+		gameflag = 1
+		while gameflag: 
 			self.beginturn(self.turnplayer)
-			if self.field.is_game_set():
-				break
+			gameflag = self.is_game_set_or_continue()
+		self.endgame()
+		
+	def is_game_set_or_continue(self):
+		if self.field.is_game_set():
+			return 0
+		else:
 			self.changeturn()
 			self.turncount += 1
-		self.endgame()
+			return 1
+	
 		
 	def endgame(self):
 	#勝利点が同じであるときは、よりターン数が少なかったプレイヤーの勝ち。
@@ -158,12 +165,15 @@ class ActionPhase(Phase):
 	
 	def start(self):
 		while (isinstance(self.player.phase, ActionPhase)):
-			if not self.player.handcheck('action'):
-				self.player.phaseend()
-			elif self.player.isAI == 1 or  self.player.isHuman == 1:  #AIまたは人間用
-				print([i.jname for i in self.player.hand])
-				print("どのアクションカードを使用しますか")
-				self.player.what_action()
+			self.is_whatdo()
+	
+	def is_whatdo(self):
+		if not self.player.handcheck('action'):
+			self.player.phaseend()
+		elif self.player.isAI == 1 or self.player.isHuman == 1:  #AIまたは人間用
+			print([i.jname for i in self.player.hand])
+			print("どのアクションカードを使用しますか")
+			self.player.what_action()
 				
 	def playable(self, card):
 		return hasattr(card, 'isaction')
@@ -185,17 +195,19 @@ class TreasurePhase(Phase):
 			self.player.phaseend()
 			
 		elif self.player.isHuman == 1:
-			while True:
-				print([i.jname for i in self.player.hand])
-				print("使用する財宝カードの番号を入力してください")
-				isbreak = self.player.what_coin_play()
-				if isbreak == -1:
-					print(self.player.coins)
-					break
+			isbreak = 0
+			self.treasure_playable_time(isbreak)
+			print(self.player.coins)
 			self.player.phaseend()
 		
 		elif self.player.isAI == 0:  #プレイヤ用
 			pass
+	
+	def treasure_playable_time(self, flag):
+		while flag != -1:
+			print([i.jname for i in self.player.hand])
+			print("使用する財宝カードの番号を入力してください")
+			flag = self.player.what_coin_play()
 			
 	def playable(self, card):
 		return hasattr(card, 'istreasure')
@@ -208,17 +220,26 @@ class BuyPhase(Phase):
 		
 	def start(self):
 		while (isinstance(self.player.phase, BuyPhase)):
-			if self.player.isAI == 1:  #AI用
-				if self.player.restbuys > 0:
-					self.player.what_buy()
-				else:
-					self.player.phaseend()
-			elif self.player.isHuman == 1:
-				if self.player.restbuys > 0:
-					print("購入するカードの番号を入力してください")
-					self.player.what_buy()
-				else:
-					self.player.phaseend()
+			self.is_ai_or_human()
+				
+	def is_ai_or_human(self):
+		if self.player.isAI == 1:  #AI用
+			self.is_continue_ai()
+		elif self.player.isHuman == 1:
+			self.is_continue_human()
+			
+	def is_continue_ai(self):
+		if self.player.restbuys > 0:
+			self.player.what_buy()
+		else:
+			self.player.phaseend()
+	
+	def is_continue_human(self):
+		if self.player.restbuys > 0:
+			print("購入するカードの番号を入力してください")
+			self.player.what_buy()
+		else:
+			self.player.phaseend()
 					
 class CleanUpPhase(Phase):
 	def __init__(self, player, field):
