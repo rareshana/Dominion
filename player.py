@@ -139,17 +139,12 @@ class HumanPlayer(Player):
 		else:
 			self.buycard(number)
 		
-	def chancellor(self):
+	def chancellor_effect(self):
 		print("山札をすべて捨て札にしますか y/n")
 		flag = 1
 		while flag:
-		#while True:
 			answer = input()
 			flag = self.input_y_or_n(answer)
-			#if answer == 'y' or answer == 'n':
-				#break
-			#else:
-				#print("yまたはnで答えてください")
 		return answer
 		
 	def input_y_or_n(self, answer):
@@ -159,17 +154,22 @@ class HumanPlayer(Player):
 			print("yまたはnで答えてください")
 			return 1
 				
-	def what_gain(self, number):
+	def what_gain_undercost(self, number):
 		print("{0}コスト以下のカードを獲得します".format(number))
-		while True:
+		flag = 1
+		while flag:
 			answer = int(input())
 			place = self.game.field.supnumber.get(answer)
-			if place.cost <= number:
-				self.gaincard(answer)
-				break
-			else:
-				print("コストが高すぎます")
-			
+			flag = self.gainable(answer, place, number)
+				
+	def gainable(self, answer, place, number):
+		if place.cost <= number:
+			self.gaincard(answer)
+			return 0
+		else:
+			print("コストが高すぎます")
+			return 1
+
 
 #任意のプレイヤーは捨て札の一番上のカードをいつでも見ることができる
 #プレイヤーはデッキの残り枚数を数えることができる
