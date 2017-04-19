@@ -141,14 +141,24 @@ class HumanPlayer(Player):
 		
 	def chancellor(self):
 		print("山札をすべて捨て札にしますか y/n")
-		while True:
+		flag = 1
+		while flag:
+		#while True:
 			answer = input()
-			if answer == 'y' or answer == 'n':
-				break
-			else:
-				print("yまたはnで答えてください")
+			flag = self.input_y_or_n(answer)
+			#if answer == 'y' or answer == 'n':
+				#break
+			#else:
+				#print("yまたはnで答えてください")
 		return answer
 		
+	def input_y_or_n(self, answer):
+		if answer == 'y' or answer == 'n':
+			return 0
+		else:
+			print("yまたはnで答えてください")
+			return 1
+				
 	def what_gain(self, number):
 		print("{0}コスト以下のカードを獲得します".format(number))
 		while True:
