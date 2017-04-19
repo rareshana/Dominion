@@ -10,6 +10,7 @@ class AIPlayer1(player.Player):#お金プレイ
 		while i < len(self.hand):
 			i = self.when_playable_coin(i)
 			i += 1
+			
 	def when_playable_coin(self, number):
 		if self.playcard(number, 'right'):
 			return (number - 1)
@@ -36,18 +37,27 @@ class AIPlayer2(player.Player): #鍛冶屋ステロ
 	def play_coins(self):
 		i = 0
 		while i < len(self.hand):
-			if self.playcard(i, 'right'):
-				i -= 1
-			if i+1 >= len(self.hand):
-				break
+			i = self.when_playable_coin(i)
 			i += 1
+			
+	def when_playable_coin(self, number):
+		if self.playcard(number, 'right'):
+			return (number - 1)
+		else:
+			return number
 			
 	def what_action(self):
 		i = 0
-		while i < len(self.hand):
-			if self.playcard(i, 'right'):
-				break
+		flag = 1
+		while i < len(self.hand) and flag:
+			flag = self.is_action_played(i)
 			i += 1
+			
+	def is_action_played(self, number):
+		if self.playcard(number, 'right'):
+			return 0
+		else:
+			return 1
 			
 	def what_buy(self):
 		if self.smithyindex == -1 and "Smithy" in [x.name for x in self.game.field.actionpile]:
