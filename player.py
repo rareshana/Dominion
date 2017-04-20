@@ -15,7 +15,7 @@ class Player():
 		self.phase = 0 #現在のフェーズを格納する
 		self.isAI = 0
 		self.isHuman = 0
-		self.others = []
+		self.other_players = []
 		self.game = game
 	
 	def draw(self, number): #デッキからカードをnumber枚引く
@@ -38,8 +38,7 @@ class Player():
 			playedcard.played(self)
 			self.is_phaseend(when)  #処理終了後、アクションフェイズで残りアクション権が0ならばフェイズを自動的に終了する	
 			return True
-		else:
-			return False
+		return False
 	
 	def is_phaseend(self, when):
 		if isinstance(self.phase, main.ActionPhase) and when is 'right' and self.restactions == 0: 
@@ -86,10 +85,6 @@ class Player():
 		type_cards = [x for x in self.hand if hasattr(x, typec)]
 		number = len(type_cards)
 		return number
-		#for i in range(number):
-			#if hasattr(self.hand[i], typec):
-				#return True
-		#return False
 	
 	def plusactions(self, number):
 		self.restactions += number
@@ -121,23 +116,22 @@ class HumanPlayer(Player):
 		number = int(input())
 		if number == -1:
 			return -1
-		else:
-			self.playcard(number, 'right')
-			return False
+		self.playcard(number, 'right')
+		return False
 			
 	def what_action(self):
 		number = int(input())
 		if number == -1:
 			self.phaseend()
-		else:
-			self.playcard(number, 'right')
+			return
+		self.playcard(number, 'right')
 			
 	def what_buy(self):
 		number = int(input())
 		if number == -1:
 			self.phaseend()
-		else:
-			self.buycard(number)
+			return
+		self.buycard(number)
 		
 	def chancellor_effect(self):
 		print("山札をすべて捨て札にしますか y/n")
@@ -150,9 +144,8 @@ class HumanPlayer(Player):
 	def input_y_or_n(self, answer):
 		if answer == 'y' or answer == 'n':
 			return 0
-		else:
-			print("yまたはnで答えてください")
-			return 1
+		print("yまたはnで答えてください")
+		return 1
 				
 	def what_gain_undercost(self, number):
 		print("{0}コスト以下のカードを獲得します".format(number))
@@ -160,15 +153,14 @@ class HumanPlayer(Player):
 		while flag:
 			answer = int(input())
 			place = self.game.field.supnumber.get(answer)
-			flag = self.gainable(answer, place, number)
+			flag = self.is_gainable(answer, place, number)
 				
-	def gainable(self, answer, place, number):
+	def is_gainable(self, answer, place, number):
 		if place.cost <= number:
 			self.gaincard(answer)
 			return 0
-		else:
-			print("コストが高すぎます")
-			return 1
+		print("コストが高すぎます")
+		return 1
 
 
 #任意のプレイヤーは捨て札の一番上のカードをいつでも見ることができる
