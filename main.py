@@ -35,11 +35,8 @@ class Game():
 		self.makesupply(copperrest, 2, card.Copper())  #銅貨の山を作る
 		self.makesupply(numofsilver, 3, card.Silver())  #銀貨の山を作る
 		self.makesupply(numofgold, 4, card.Gold())  #金貨の山を作る
-	
-		if self.number == 2:  #人数によって勝利点カードの枚数を制御
-			numofvict = numofvict2
-		elif self.number == 3 or self.number == 4:
-			numofvict = numofvict34
+		
+		numofvict = self.howmany_victorycards(self.number)#人数によって勝利点カードの枚数を制御
 		
 		self.makesupply(numofvict, 5, card.Estate())  #屋敷の山を作る
 		self.makesupply(numofvict, 6, card.Duchy())  #公領の山を作る
@@ -50,7 +47,12 @@ class Game():
 		[self.makesupply(numofact, i, j()) for i, j in zip(range(8, 18), supply)]  
 		
 		print([self.field.supnumber.get(i).name for i in range(1,18)])
-		
+	
+	def howmany_victorycards(self, number):
+		if number == 2:
+			return numofvict2
+		if number== 3 or number == 4:
+			return numofvict34
 	def makesupply(self, number, placenum, cardclass):  #山札を作る(引数は、枚数、場所、カードを生成するコマンド)
 		cards = [cardclass for i in range(number)]
 		self.field.supnumber.get(placenum).pile.extend(cards)
@@ -82,10 +84,9 @@ class Game():
 	def is_game_set_or_continue(self):
 		if self.field.is_game_set():
 			return 0
-		else:
-			self.changeturn()
-			self.turncount += 1
-			return 1
+		self.changeturn()
+		self.turncount += 1
+		return 1
 	
 		
 	def endgame(self):
@@ -117,8 +118,7 @@ class Field():
 	def is_game_set(self):
 		if self.zeropile >= 3 or len(self.supnumber.get(7).pile) == 0:
 			return True
-		else:
-			return False
+		return False
 
 		
 		
@@ -165,16 +165,19 @@ class ActionPhase(Phase):
 	
 	def start(self):
 		while (isinstance(self.player.phase, ActionPhase)):
-			self.is_whatdo()
+			self.what_do()
 	
-	def is_whatdo(self):
+	def what_do(self):
 		if not self.player.handcheck('action'):
 			self.player.phaseend()
-		elif self.player.isAI == 1 or self.player.isHuman == 1:  #AIまたは人間用
+			return
+			
+		if self.player.isAI == 1 or self.player.isHuman == 1:  #AIまたは人間用
 			print([i.jname for i in self.player.hand])
 			print("どのアクションカードを使用しますか")
 			self.player.what_action()
-				
+		#分けられそう		
+		
 	def playable(self, card):
 		return hasattr(card, 'isaction')
 		
@@ -193,15 +196,18 @@ class TreasurePhase(Phase):
 			self.player.play_coins()
 			print(self.player.coins)
 			self.player.phaseend()
+			return
 			
-		elif self.player.isHuman == 1:
+		if self.player.isHuman == 1:
 			isbreak = 0
 			self.treasure_playable_time(isbreak)
 			print(self.player.coins)
 			self.player.phaseend()
+			return
 		
-		elif self.player.isAI == 0:  #プレイヤ用
+		if self.player.isAI == 0:  #プレイヤ用
 			pass
+	#Strategyパターン？
 	
 	def treasure_playable_time(self, flag):
 		while flag != -1:
@@ -225,21 +231,24 @@ class BuyPhase(Phase):
 	def is_ai_or_human(self):
 		if self.player.isAI == 1:  #AI用
 			self.is_continue_ai()
-		elif self.player.isHuman == 1:
+			return
+			
+		if self.player.isHuman == 1:
 			self.is_continue_human()
+			return
 			
 	def is_continue_ai(self):
 		if self.player.restbuys > 0:
 			self.player.what_buy()
-		else:
-			self.player.phaseend()
+			return
+		self.player.phaseend()
 	
 	def is_continue_human(self):
 		if self.player.restbuys > 0:
 			print("購入するカードの番号を入力してください")
 			self.player.what_buy()
-		else:
-			self.player.phaseend()
+			return
+		self.player.phaseend()
 					
 class CleanUpPhase(Phase):
 	def __init__(self, player, field):
