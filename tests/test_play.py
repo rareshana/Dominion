@@ -9,7 +9,7 @@ class Testplay(unittest.TestCase): #アクションフェイズでカードを�
 		self._game = play.game_setup(3)
 		
 	def test_end_actionphase(self): #何も持っていなければアクションフェイズが終了している
-		self.assertEqual(self._game.player[0].others, [self._game.player[1], self._game.player[2]]) 
+		self.assertEqual(self._game.player[0].other_players, [self._game.player[1], self._game.player[2]]) 
 	
 
 	

@@ -19,14 +19,10 @@ class Card(): #カード
 		pass
 		
 	def is_type(self, type):
-		if hasattr(self, type):
-			return True
+		return (hasattr(self, type))
 	
 	def is_victory_or_curse(self):
-		if hasattr(self, 'isvictory') or hasattr(self, 'iscurse'):
-			return True
-		else:
-			return False
+		return (hasattr(self, 'isvictory') or hasattr(self, 'iscurse'))
 
 class TreasureCard(Card): #財宝カード
 	def __init__(self, ename, jname, cost, clas, type, set, value):
@@ -139,7 +135,7 @@ class CouncilRoom(ActionCard): #議事堂
 	def played(self, user):
 		user.draw(4)
 		user.plusbuys(1)
-		[x.draw(1) for x in user.others]
+		[x.draw(1) for x in user.other_players]
 
 class Chancellor(ActionCard): #宰相
 	def __init__(self):
@@ -151,8 +147,10 @@ class Chancellor(ActionCard): #宰相
 		if answer == 'y':
 			user.dispile.extend(user.deck[::-1])
 			user.deck.clear()
-		elif answer == 'n':
+			return
+		if answer == 'n':
 			pass
+			return
 
 class Feast(ActionCard):
 	def __init__(self):

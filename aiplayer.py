@@ -14,18 +14,19 @@ class AIPlayer1(player.Player):#お金プレイ
 	def when_playable_coin(self, number):
 		if self.playcard(number, 'right'):
 			return (number - 1)
-		else:
-			return number
+		return number
 			
 	def what_buy(self):
 		if self.coins < 3:
 			self.phaseend()
-		elif self.coins < 6:
+			return
+		if self.coins < 6:
 			self.buycard(3)
-		elif self.coins < 8:
+			return
+		if self.coins < 8:
 			self.buycard(4)
-		else:
-			self.buycard(7)
+			return
+		self.buycard(7)
 
 class AIPlayer2(player.Player): #鍛冶屋ステロ
 	def __init__(self, game):
@@ -43,8 +44,7 @@ class AIPlayer2(player.Player): #鍛冶屋ステロ
 	def when_playable_coin(self, number):
 		if self.playcard(number, 'right'):
 			return (number - 1)
-		else:
-			return number
+		return number
 			
 	def what_action(self):
 		i = 0
@@ -56,8 +56,7 @@ class AIPlayer2(player.Player): #鍛冶屋ステロ
 	def is_action_played(self, number):
 		if self.playcard(number, 'right'):
 			return 0
-		else:
-			return 1
+		return 1
 			
 	def what_buy(self):
 		if self.smithyindex == -1 and "Smithy" in [x.name for x in self.game.field.actionpile]:
@@ -65,15 +64,19 @@ class AIPlayer2(player.Player): #鍛冶屋ステロ
 		
 		if self.coins < 3:
 			self.phaseend()
-		elif self.coins == 3:
+			return
+		if self.coins == 3:
 			self.buycard(3)
-		elif self.coins < 6 and self.smithycount == 0 and self.smithyindex != -1:
+			return
+		if self.coins < 6 and self.smithycount == 0 and self.smithyindex != -1:
 			self.smithycount += 1
 			self.buycard(self.smithyindex)
-		elif self.coins < 6:
+			return
+		if self.coins < 6:
 			self.buycard(3)
-		elif self.coins < 8:
+			return
+		if self.coins < 8:
 			self.buycard(4)
-		else:
-			self.buycard(7)
+			return
+		self.buycard(7)
 					
