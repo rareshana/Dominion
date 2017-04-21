@@ -106,6 +106,15 @@ class Player():
 	
 	def what_gain(self, number):
 		pass
+		
+class AvailablePerTurn():
+	def __init__(self):
+		self.rest_actions = 1
+		self.rest_buys = 1
+		self.coins = 0
+	
+	
+	
 	
 class HumanPlayer(Player):
 	def __init__(self, game):
