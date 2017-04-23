@@ -15,33 +15,33 @@ class Player():
 		self.cards.draw(number)
 	
 	def playcard(self, number, when = None): #カードは手札からプレイされる　手札の何枚目かをnumberとして与える 正規のタイミング(財宝フェイズに出す財宝、アクションフェイズにアクション権を消費して出すアクションカード)でカードをプレイするとき、whenに'right'を与えることにする
-		if (when is None) or (self.gameinfo.phase.playable(self.cards.hand[number])):
-			playedcard = self.cards.hand.pop(number)
-			self.cards.playarea.append(playedcard)#手札からカードを取り出して自分の場に出す
-			self.gameinfo.phase.rightplayed(when)
+		the_card = self.cards.hand_pickup(number)
+		if (when is None) or (self.gameinfo.playable(the_card)):
+			playedcard = self.cards.play_from_hands(number)
+			self.gameinfo.rightplayed(when)
 			playedcard.played(self)
-			self.is_phaseend(when)  #処理終了後、アクションフェイズで残りアクション権が0ならばフェイズを自動的に終了する	
+			self.is_actionphase_end(when)  #処理終了後、アクションフェイズで残りアクション権が0ならばフェイズを自動的に終了する	
 			return True
 		return False
 	
-	def is_phaseend(self, when):
-		if isinstance(self.gameinfo.phase, main.ActionPhase) and when is 'right' and self.available.rest_actions == 0: 
+	def is_actionphase_end(self, when):
+		if self.gameinfo.phase_judged(main.ActionPhase) and (when is 'right') and (not self.is_action_left()): 
 			self.phaseend()
 	
 	def shuffle(self):
 		self.cards.shuffle()
 		
 	def gaincard(self, number): #カードは原則サプライから獲得される　山札の番号をnumberとして与える。それだけだと情報が足りないので、fieldの情報も与えなければ……
-		place = self.gameinfo.game.field.supnumber.get(number)
-		if place.pile: #山札が切れていない場合のみ獲得できる
+		place = self.gameinfo.get_supply(number)
+		if place.is_left(): #山札が切れていない場合のみ獲得できる
 			gainedcard = place.pile.pop()
 			self.cards.dispile.append(gainedcard)
 			gainedcard.gained(self)
 			place.zerocheck(self.gameinfo.game.field)
 	
 	def buycard(self, number):#カードは原則サプライから購入される　山札の番号をnumberとして与える。
-		place = self.gameinfo.game.field.supnumber.get(number)
-		if not place.pile:
+		place = self.gameinfo.get_supply(number)
+		if not place.is_left():
 			return
 		if self.available.coins >= place.cost and self.available.rest_buys > 0:
 			self.available.coins -= place.cost #そのカードのコストを購入者の残り金から減算
@@ -92,6 +92,10 @@ class Player():
 	def nextphase(self):
 		self.gameinfo.phaseend()
 	
+	def is_action_left(self):
+		return self.available.is_action_left()
+
+	
 class PlayerCards():
 	def __init__(self):
 		self.deck = [] #デッキ 下から上へ
@@ -128,6 +132,14 @@ class PlayerCards():
 		number = len(type_cards)
 		return number
 		
+	def play_from_hands(self, number):
+		playedcard = self.hand.pop(number)
+		self.playarea.append(playedcard)
+		return playedcard
+	
+	def hand_pickup(self, number):
+		return self.hand[number]
+		
 		
 class AvailablePerTurn():
 	def __init__(self):
@@ -143,7 +155,9 @@ class AvailablePerTurn():
 		
 	def pluscoins(self, number):
 		self.coins += number
-
+	
+	def is_action_left(self):
+		return (self.rest_actions > 0)
 		
 class PlayerGameInfo():
 	def __init__(self, game):
@@ -159,6 +173,18 @@ class PlayerGameInfo():
 		
 	def beginturn(self, turn):
 		self.turn = turn
+	
+	def phase_judged(self, phase):
+		return isinstance(self.phase, phase)
+		
+	def get_supply(self, number):
+		return self.game.get_supply(number)
+	
+	def rightplayed(self, when):
+		self.phase.rightplayed(when)
+		
+	def playable(self, card):
+		return self.phase.playable(card)
 		
 class HumanPlayer(Player):
 	def __init__(self, game):

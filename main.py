@@ -98,6 +98,9 @@ class Game():
 		
 	def get_cardinfo(self, number):
 		return self.field.get_cardinfo(number)
+		
+	def get_supply(self, number):
+		return self.field.get_supply(number)
 
 		
 
@@ -126,6 +129,9 @@ class Field():
 	
 	def get_cardinfo(self, number):
 		return self.supnumber.get(number).pile[0]
+		
+	def get_supply(self, number):
+		return self.supnumber.get(number)
 		
 		
 class Turn():
@@ -278,3 +284,6 @@ class Pile():  #サプライのカードの山
 	def zerocheck(self, field):  #山をチェックし、それが残り0枚ならzeropileをインクリメントする
 		if len(self.pile) == 0:
 			field.zeropile += 1
+			
+	def is_left(self):
+		return (len(self.pile) > 0)
