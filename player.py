@@ -4,54 +4,52 @@ import main
 
 class Player():
 	def __init__(self, game):
-		self.cards = PlayerCards()
-		self.coins = 0 #自分のターンに使える残り金数
-		self.restactions = 1 #自分のターンに使えるアクションの残り回数
-		self.restbuys = 1 #自分のターンで使用できる残り購入権
-		self.turn = 0 #各ターンを格納する
-		self.phase = 0 #現在のフェーズを格納する
+		self.cards = PlayerCards() #手札、デッキ、巣手札、プレイエリア
+		self.available = AvailablePerTurn() #残り金数、残りアクション権、残り購入権
 		self.isAI = 0
 		self.isHuman = 0
 		self.other_players = []
-		self.game = game
-	
+		self.gameinfo = PlayerGameInfo(game)
 	
 	def draw(self, number):
 		self.cards.draw(number)
 	
 	def playcard(self, number, when = None): #カードは手札からプレイされる　手札の何枚目かをnumberとして与える 正規のタイミング(財宝フェイズに出す財宝、アクションフェイズにアクション権を消費して出すアクションカード)でカードをプレイするとき、whenに'right'を与えることにする
-		if (when is None) or (self.phase.playable(self.cards.hand[number])):
+		if (when is None) or (self.gameinfo.phase.playable(self.cards.hand[number])):
 			playedcard = self.cards.hand.pop(number)
 			self.cards.playarea.append(playedcard)#手札からカードを取り出して自分の場に出す
-			self.phase.rightplayed(when)
+			self.gameinfo.phase.rightplayed(when)
 			playedcard.played(self)
 			self.is_phaseend(when)  #処理終了後、アクションフェイズで残りアクション権が0ならばフェイズを自動的に終了する	
 			return True
 		return False
 	
 	def is_phaseend(self, when):
-		if isinstance(self.phase, main.ActionPhase) and when is 'right' and self.restactions == 0: 
+		if isinstance(self.gameinfo.phase, main.ActionPhase) and when is 'right' and self.available.rest_actions == 0: 
 			self.phaseend()
 	
 	def shuffle(self):
 		self.cards.shuffle()
 		
 	def gaincard(self, number): #カードは原則サプライから獲得される　山札の番号をnumberとして与える。それだけだと情報が足りないので、fieldの情報も与えなければ……
-		place = self.game.field.supnumber.get(number)
+		place = self.gameinfo.game.field.supnumber.get(number)
 		if place.pile: #山札が切れていない場合のみ獲得できる
 			gainedcard = place.pile.pop()
 			self.cards.dispile.append(gainedcard)
 			gainedcard.gained(self)
-			place.zerocheck(self.game.field)
+			place.zerocheck(self.gameinfo.game.field)
 	
 	def buycard(self, number):#カードは原則サプライから購入される　山札の番号をnumberとして与える。
-		boughtcard = self.game.field.supnumber.get(number).pile[0] #購入したいカードを変数に取得
-		if self.coins >= boughtcard.cost and self.restbuys > 0:
-			self.coins -= boughtcard.cost #そのカードのコストを購入者の残り金から減算
-			self.restbuys -= 1 #購入権を1減らす
+		place = self.gameinfo.game.field.supnumber.get(number)
+		if not place.pile:
+			return
+		if self.available.coins >= place.cost and self.available.rest_buys > 0:
+			self.available.coins -= place.cost #そのカードのコストを購入者の残り金から減算
+			self.available.rest_buys -= 1 #購入権を1減らす
+			print(self.available.rest_buys)
 			self.gaincard(number)
-			print(boughtcard.jname)
-	
+			print(place.name)
+
 	def trashcard(self, object, place):
 		number = place.index(object)
 		trashedcard = place.pop(number)
@@ -59,24 +57,23 @@ class Player():
 		trashedcard.trashed(self)
 		
 	def phaseend(self): #現在のフェーズを終了し、次のフェーズへ移行する
-		self.phase = next(self.turn)
+		self.gameinfo.phaseend()
 	
 	def victorycount(self):
 		return self.cards.victorycount()
 	
-
 	def handcheck(self, type):
 		return self.cards.handcheck(type)
-		
+	
 	def plusactions(self, number):
-		self.restactions += number
+		self.available.plusactions(number)
 	
 	def plusbuys(self, number):
-		self.restbuys += number
+		self.available.plusbuys(number)
 		
 	def pluscoins(self, number):
-		self.coins += number
-		
+		self.available.pluscoins(number)
+	
 	def what_action(self):
 		self.phaseend()
 		
@@ -88,6 +85,12 @@ class Player():
 	
 	def what_gain(self, number):
 		pass
+		
+	def beginturn(self, turn):
+		self.gameinfo.beginturn(turn)
+		
+	def nextphase(self):
+		self.gameinfo.phaseend()
 	
 class PlayerCards():
 	def __init__(self):
@@ -125,13 +128,38 @@ class PlayerCards():
 		number = len(type_cards)
 		return number
 		
+		
 class AvailablePerTurn():
 	def __init__(self):
 		self.rest_actions = 1
 		self.rest_buys = 1
 		self.coins = 0
+	
+	def plusactions(self, number):
+		self.rest_actions += number
+	
+	def plusbuys(self, number):
+		self.rest_buys += number
+		
+	def pluscoins(self, number):
+		self.coins += number
 
+		
+class PlayerGameInfo():
+	def __init__(self, game):
+		self.turn = 0
+		self.phase = 0
+		self.game = game
+	
+	def get_cardinfo(self, number):
+		return self.game.get_cardinfo(number)
 
+	def phaseend(self):
+		self.phase = next(self.turn)
+		
+	def beginturn(self, turn):
+		self.turn = turn
+		
 class HumanPlayer(Player):
 	def __init__(self, game):
 		super().__init__(game)

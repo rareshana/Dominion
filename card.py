@@ -31,7 +31,7 @@ class TreasureCard(Card): #財宝カード
 		self.istreasure = 1 #財宝カードなら1
 		
 	def played(self, user): #財宝カードがプレイされると使用者の残り金数が増える
-		user.coins += self.coins
+		user.pluscoins(self.coins)
 
 class VictoryCard(Card): #勝利点カード
 	def __init__(self, ename, jname, cost, clas, type, set, value):

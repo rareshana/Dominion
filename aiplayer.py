@@ -17,13 +17,13 @@ class AIPlayer1(player.Player):#お金プレイ
 		return number
 			
 	def what_buy(self):
-		if self.coins < 3:
+		if self.available.coins < 3:
 			self.phaseend()
 			return
-		if self.coins < 6:
+		if self.available.coins < 6:
 			self.buycard(3)
 			return
-		if self.coins < 8:
+		if self.available.coins < 8:
 			self.buycard(4)
 			return
 		self.buycard(7)
@@ -59,23 +59,23 @@ class AIPlayer2(player.Player): #鍛冶屋ステロ
 		return 1
 			
 	def what_buy(self):
-		if self.smithyindex == -1 and "Smithy" in [x.name for x in self.game.field.actionpile]:
-			self.smithyindex = [x.name for x in self.game.field.actionpile].index("Smithy") + 8
+		if self.smithyindex == -1 and "Smithy" in [x.name for x in self.gameinfo.game.field.actionpile]:
+			self.smithyindex = [x.name for x in self.gameinfo.game.field.actionpile].index("Smithy") + 8
 		
-		if self.coins < 3:
+		if self.available.coins < 3:
 			self.phaseend()
 			return
-		if self.coins == 3:
+		if self.available.coins == 3:
 			self.buycard(3)
 			return
-		if self.coins < 6 and self.smithycount == 0 and self.smithyindex != -1:
+		if self.available.coins < 6 and self.smithycount == 0 and self.smithyindex != -1:
 			self.smithycount += 1
 			self.buycard(self.smithyindex)
 			return
-		if self.coins < 6:
+		if self.available.coins < 6:
 			self.buycard(3)
 			return
-		if self.coins < 8:
+		if self.available.coins < 8:
 			self.buycard(4)
 			return
 		self.buycard(7)

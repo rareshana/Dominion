@@ -65,12 +65,12 @@ class Game():
 		print(self.turncount)
 		print("ターン開始")
 		turn = iter(Turn(self.player[playernum], self.field))
-		self.player[playernum].turn = turn
-		self.player[playernum].phase = next(self.player[playernum].turn)  #Start
-		self.player[playernum].phase = next(self.player[playernum].turn)  #Action
-		self.player[playernum].phase.start()  #Action
-		self.player[playernum].phase.start()  #Treasure
-		self.player[playernum].phase.start()  #Buy
+		self.player[playernum].beginturn(turn)
+		self.player[playernum].nextphase() #Start
+		self.player[playernum].nextphase() #Action
+		self.player[playernum].gameinfo.phase.start()  #Action
+		self.player[playernum].gameinfo.phase.start()  #Treasure
+		self.player[playernum].gameinfo.phase.start()  #Buy
 		
 	def changeturn(self):
 		self.turnplayer = (self.turnplayer + 1) % self.number
@@ -95,6 +95,9 @@ class Game():
 		print("ゲーム終了です")
 		VP = [self.player[i].victorycount() for i in range(self.number)]
 		print(VP)
+		
+	def get_cardinfo(self, number):
+		return self.field.get_cardinfo(number)
 
 		
 
@@ -120,7 +123,9 @@ class Field():
 		if self.zeropile >= 3 or len(self.supnumber.get(7).pile) == 0:
 			return True
 		return False
-
+	
+	def get_cardinfo(self, number):
+		return self.supnumber.get(number).pile[0]
 		
 		
 class Turn():
@@ -154,9 +159,9 @@ class Phase():
 class StartPhase(Phase):
 	def __init__(self, player):
 		super().__init__(player)
-		self.player.restactions = 1
-		self.player.restbuys = 1
-		self.player.coins = 0
+		self.player.available.rest_actions = 1
+		self.player.available.rest_buys = 1
+		self.player.available.coins = 0
 		
 		
 class ActionPhase(Phase):
@@ -165,7 +170,7 @@ class ActionPhase(Phase):
 		print("アクションフェイズです")
 	
 	def start(self):
-		while (isinstance(self.player.phase, ActionPhase)):
+		while (isinstance(self.player.gameinfo.phase, ActionPhase)):
 			self.what_do()
 	
 	def what_do(self):
@@ -184,7 +189,7 @@ class ActionPhase(Phase):
 		
 	def rightplayed(self, when):
 		if when == 'right':
-			self.player.restactions -= 1  #カードがプレイされたらアクション権を1減らす
+			self.player.available.rest_actions -= 1  #カードがプレイされたらアクション権を1減らす
 			
 class TreasurePhase(Phase):
 	def __init__(self, player):
@@ -195,14 +200,14 @@ class TreasurePhase(Phase):
 	def start(self):
 		if self.player.isAI == 1:  #AI用
 			self.player.play_coins()
-			print(self.player.coins)
+			print(self.player.available.coins)
 			self.player.phaseend()
 			return
 			
 		if self.player.isHuman == 1:
 			isbreak = 0
 			self.treasure_playable_time(isbreak)
-			print(self.player.coins)
+			print(self.player.available.coins)
 			self.player.phaseend()
 			return
 		
@@ -226,7 +231,7 @@ class BuyPhase(Phase):
 		self.field = field
 		
 	def start(self):
-		while (isinstance(self.player.phase, BuyPhase)):
+		while (isinstance(self.player.gameinfo.phase, BuyPhase)):
 			self.is_ai_or_human()
 				
 	def is_ai_or_human(self):
@@ -239,13 +244,13 @@ class BuyPhase(Phase):
 			return
 			
 	def is_continue_ai(self):
-		if self.player.restbuys > 0:
+		if self.player.available.rest_buys > 0:
 			self.player.what_buy()
 			return
 		self.player.phaseend()
 	
 	def is_continue_human(self):
-		if self.player.restbuys > 0:
+		if self.player.available.rest_buys > 0:
 			print("購入するカードの番号を入力してください")
 			self.player.what_buy()
 			return
