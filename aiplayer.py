@@ -7,7 +7,7 @@ class AIPlayer1(player.Player):#お金プレイ
 		
 	def play_coins(self):
 		i = 0
-		while i < len(self.hand):
+		while i < len(self.cards.hand):
 			i = self.when_playable_coin(i)
 			i += 1
 			
@@ -37,7 +37,7 @@ class AIPlayer2(player.Player): #鍛冶屋ステロ
 		
 	def play_coins(self):
 		i = 0
-		while i < len(self.hand):
+		while i < len(self.cards.hand):
 			i = self.when_playable_coin(i)
 			i += 1
 			
@@ -49,7 +49,7 @@ class AIPlayer2(player.Player): #鍛冶屋ステロ
 	def what_action(self):
 		i = 0
 		flag = 1
-		while i < len(self.hand) and flag:
+		while i < len(self.cards.hand) and flag:
 			flag = self.is_action_played(i)
 			i += 1
 			

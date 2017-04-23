@@ -26,8 +26,8 @@ class Game():
 		#その後、各々のデッキをシャッフルし、デッキから5枚引いて手札にする
 			copper = [card.Copper() for i in range(7)]
 			estate = [card.Estate() for i in range(3)]
-			self.player[i].deck.extend(copper)
-			self.player[i].deck.extend(estate)
+			self.player[i].cards.deck.extend(copper)
+			self.player[i].cards.deck.extend(estate)
 			self.player[i].shuffle()
 			self.player[i].draw(5)
 			
@@ -53,6 +53,7 @@ class Game():
 			return numofvict2
 		if number== 3 or number == 4:
 			return numofvict34
+			
 	def makesupply(self, number, placenum, cardclass):  #山札を作る(引数は、枚数、場所、カードを生成するコマンド)
 		cards = [cardclass for i in range(number)]
 		self.field.supnumber.get(placenum).pile.extend(cards)
@@ -173,7 +174,7 @@ class ActionPhase(Phase):
 			return
 			
 		if self.player.isAI == 1 or self.player.isHuman == 1:  #AIまたは人間用
-			print([i.jname for i in self.player.hand])
+			print([i.jname for i in self.player.cards.hand])
 			print("どのアクションカードを使用しますか")
 			self.player.what_action()
 		#分けられそう		
@@ -189,7 +190,7 @@ class TreasurePhase(Phase):
 	def __init__(self, player):
 		super().__init__(player)
 		print("財宝フェイズです")
-		print([i.jname for i in self.player.hand])
+		print([i.jname for i in self.player.cards.hand])
 		
 	def start(self):
 		if self.player.isAI == 1:  #AI用
@@ -211,7 +212,7 @@ class TreasurePhase(Phase):
 	
 	def treasure_playable_time(self, flag):
 		while flag != -1:
-			print([i.jname for i in self.player.hand])
+			print([i.jname for i in self.player.cards.hand])
 			print("使用する財宝カードの番号を入力してください")
 			flag = self.player.what_coin_play()
 			
@@ -257,10 +258,10 @@ class CleanUpPhase(Phase):
 		self.cleanup()
 		
 	def cleanup(self):
-		self.player.dispile.extend(self.player.playarea)
-		self.player.playarea.clear()
-		self.player.dispile.extend(self.player.hand)
-		self.player.hand.clear()
+		self.player.cards.dispile.extend(self.player.cards.playarea)
+		self.player.cards.playarea.clear()
+		self.player.cards.dispile.extend(self.player.cards.hand)
+		self.player.cards.hand.clear()
 		self.player.draw(5)
 		
 class Pile():  #サプライのカードの山
