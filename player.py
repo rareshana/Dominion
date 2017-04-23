@@ -4,10 +4,6 @@ import main
 
 class Player():
 	def __init__(self, game):
-		#self.deck = [] #デッキ 下から上へ
-		#self.hand = [] #手札 左から右へ
-		#self.dispile = [] #捨て札の山 下から上へ
-		#self.playarea = [] #各プレイヤーの場 左から右へ
 		self.cards = PlayerCards()
 		self.coins = 0 #自分のターンに使える残り金数
 		self.restactions = 1 #自分のターンに使えるアクションの残り回数
@@ -19,19 +15,7 @@ class Player():
 		self.other_players = []
 		self.game = game
 	
-	"""
-	def draw(self, number): #デッキからカードをnumber枚引く
-		if (number > len(self.deck)) and len(self.deck) >= 0: #デッキの枚数が足りず、かつ捨て札があるとき
-			number -= len(self.deck)
-			self.hand.extend(self.deck[::-1])
-			self.deck.clear()
-			self.deck.extend(self.dispile)
-			self.dispile.clear()
-			self.shuffle()
-		drawcard = self.deck[-number:]
-		self.deck = self.deck[:-number]
-		self.hand.extend(drawcard[::-1])
-	"""
+	
 	def draw(self, number):
 		self.cards.draw(number)
 	
@@ -48,10 +32,7 @@ class Player():
 	def is_phaseend(self, when):
 		if isinstance(self.phase, main.ActionPhase) and when is 'right' and self.restactions == 0: 
 			self.phaseend()
-	"""	
-	def shuffle(self): #デッキをシャッフルする
-		random.shuffle(self.deck)
-	"""
+	
 	def shuffle(self):
 		self.cards.shuffle()
 		
@@ -80,25 +61,10 @@ class Player():
 	def phaseend(self): #現在のフェーズを終了し、次のフェーズへ移行する
 		self.phase = next(self.turn)
 	
-	"""	
-	def victorycount(self): #ゲーム終了後の勝利点計算
-		vp = 0
-		self.deck.extend(self.dispile)
-		self.deck.extend(self.hand)
-		self.deck.extend(self.playarea)
-		vp = sum([i.vicpts for i in self.deck if i.is_victory_or_curse()])
-		return vp	
-	"""
 	def victorycount(self):
 		return self.cards.victorycount()
 	
-	"""
-	def handcheck(self, type):
-		typec = card.cardtype.get(type)
-		type_cards = [x for x in self.hand if hasattr(x, typec)]
-		number = len(type_cards)
-		return number
-	"""
+
 	def handcheck(self, type):
 		return self.cards.handcheck(type)
 		
