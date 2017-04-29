@@ -26,8 +26,8 @@ class Game():
 		#その後、各々のデッキをシャッフルし、デッキから5枚引いて手札にする
 			copper = [card.Copper() for i in range(7)]
 			estate = [card.Estate() for i in range(3)]
-			self.player[i].deck.extend(copper)
-			self.player[i].deck.extend(estate)
+			self.player[i].cards.deck.extend(copper)
+			self.player[i].cards.deck.extend(estate)
 			self.player[i].shuffle()
 			self.player[i].draw(5)
 			
@@ -53,6 +53,7 @@ class Game():
 			return numofvict2
 		if number== 3 or number == 4:
 			return numofvict34
+			
 	def makesupply(self, number, placenum, cardclass):  #山札を作る(引数は、枚数、場所、カードを生成するコマンド)
 		cards = [cardclass for i in range(number)]
 		self.field.supnumber.get(placenum).pile.extend(cards)
@@ -64,12 +65,12 @@ class Game():
 		print(self.turncount)
 		print("ターン開始")
 		turn = iter(Turn(self.player[playernum], self.field))
-		self.player[playernum].turn = turn
-		self.player[playernum].phase = next(self.player[playernum].turn)  #Start
-		self.player[playernum].phase = next(self.player[playernum].turn)  #Action
-		self.player[playernum].phase.start()  #Action
-		self.player[playernum].phase.start()  #Treasure
-		self.player[playernum].phase.start()  #Buy
+		self.player[playernum].beginturn(turn)
+		self.player[playernum].nextphase() #Start
+		self.player[playernum].nextphase() #Action
+		self.player[playernum].gameinfo.phase.start()  #Action
+		self.player[playernum].gameinfo.phase.start()  #Treasure
+		self.player[playernum].gameinfo.phase.start()  #Buy
 		
 	def changeturn(self):
 		self.turnplayer = (self.turnplayer + 1) % self.number
@@ -94,6 +95,12 @@ class Game():
 		print("ゲーム終了です")
 		VP = [self.player[i].victorycount() for i in range(self.number)]
 		print(VP)
+		
+	def get_cardinfo(self, number):
+		return self.field.get_cardinfo(number)
+		
+	def get_supply(self, number):
+		return self.field.get_supply(number)
 
 		
 
@@ -119,7 +126,12 @@ class Field():
 		if self.zeropile >= 3 or len(self.supnumber.get(7).pile) == 0:
 			return True
 		return False
-
+	
+	def get_cardinfo(self, number):
+		return self.supnumber.get(number).pile[0]
+		
+	def get_supply(self, number):
+		return self.supnumber.get(number)
 		
 		
 class Turn():
@@ -153,9 +165,9 @@ class Phase():
 class StartPhase(Phase):
 	def __init__(self, player):
 		super().__init__(player)
-		self.player.restactions = 1
-		self.player.restbuys = 1
-		self.player.coins = 0
+		self.player.available.rest_actions = 1
+		self.player.available.rest_buys = 1
+		self.player.available.coins = 0
 		
 		
 class ActionPhase(Phase):
@@ -164,7 +176,7 @@ class ActionPhase(Phase):
 		print("アクションフェイズです")
 	
 	def start(self):
-		while (isinstance(self.player.phase, ActionPhase)):
+		while (isinstance(self.player.gameinfo.phase, ActionPhase)):
 			self.what_do()
 	
 	def what_do(self):
@@ -173,7 +185,7 @@ class ActionPhase(Phase):
 			return
 			
 		if self.player.isAI == 1 or self.player.isHuman == 1:  #AIまたは人間用
-			print([i.jname for i in self.player.hand])
+			print([i.jname for i in self.player.cards.hand])
 			print("どのアクションカードを使用しますか")
 			self.player.what_action()
 		#分けられそう		
@@ -183,25 +195,25 @@ class ActionPhase(Phase):
 		
 	def rightplayed(self, when):
 		if when == 'right':
-			self.player.restactions -= 1  #カードがプレイされたらアクション権を1減らす
+			self.player.available.rest_actions -= 1  #カードがプレイされたらアクション権を1減らす
 			
 class TreasurePhase(Phase):
 	def __init__(self, player):
 		super().__init__(player)
 		print("財宝フェイズです")
-		print([i.jname for i in self.player.hand])
+		print([i.jname for i in self.player.cards.hand])
 		
 	def start(self):
 		if self.player.isAI == 1:  #AI用
 			self.player.play_coins()
-			print(self.player.coins)
+			print(self.player.available.coins)
 			self.player.phaseend()
 			return
 			
 		if self.player.isHuman == 1:
 			isbreak = 0
 			self.treasure_playable_time(isbreak)
-			print(self.player.coins)
+			print(self.player.available.coins)
 			self.player.phaseend()
 			return
 		
@@ -211,7 +223,7 @@ class TreasurePhase(Phase):
 	
 	def treasure_playable_time(self, flag):
 		while flag != -1:
-			print([i.jname for i in self.player.hand])
+			print([i.jname for i in self.player.cards.hand])
 			print("使用する財宝カードの番号を入力してください")
 			flag = self.player.what_coin_play()
 			
@@ -225,7 +237,7 @@ class BuyPhase(Phase):
 		self.field = field
 		
 	def start(self):
-		while (isinstance(self.player.phase, BuyPhase)):
+		while (isinstance(self.player.gameinfo.phase, BuyPhase)):
 			self.is_ai_or_human()
 				
 	def is_ai_or_human(self):
@@ -238,13 +250,13 @@ class BuyPhase(Phase):
 			return
 			
 	def is_continue_ai(self):
-		if self.player.restbuys > 0:
+		if self.player.available.rest_buys > 0:
 			self.player.what_buy()
 			return
 		self.player.phaseend()
 	
 	def is_continue_human(self):
-		if self.player.restbuys > 0:
+		if self.player.available.rest_buys > 0:
 			print("購入するカードの番号を入力してください")
 			self.player.what_buy()
 			return
@@ -257,10 +269,10 @@ class CleanUpPhase(Phase):
 		self.cleanup()
 		
 	def cleanup(self):
-		self.player.dispile.extend(self.player.playarea)
-		self.player.playarea.clear()
-		self.player.dispile.extend(self.player.hand)
-		self.player.hand.clear()
+		self.player.cards.dispile.extend(self.player.cards.playarea)
+		self.player.cards.playarea.clear()
+		self.player.cards.dispile.extend(self.player.cards.hand)
+		self.player.cards.hand.clear()
 		self.player.draw(5)
 		
 class Pile():  #サプライのカードの山
@@ -272,3 +284,6 @@ class Pile():  #サプライのカードの山
 	def zerocheck(self, field):  #山をチェックし、それが残り0枚ならzeropileをインクリメントする
 		if len(self.pile) == 0:
 			field.zeropile += 1
+			
+	def is_left(self):
+		return (len(self.pile) > 0)
