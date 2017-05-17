@@ -1,5 +1,10 @@
-cardtype = {'action':'isaction', 'treasure':'istreasure', 'victory':'isvictory', 'curse':'iscurse'}
-
+class CardType():
+	def __init__(self):
+		self.cardtype = {'action':'isaction', 'treasure':'istreasure', 'victory':'isvictory', 'curse':'iscurse'}
+	
+	def get(self, type):
+		return self.cardtype.get(type)
+		
 class Card(): #カード
 	def __init__(self, ename, jname, cost, clas, type, set):
 		self.ename = ename #カードの名称(英語)

@@ -35,9 +35,9 @@ class Player():
 		place = self.gameinfo.get_supply(number)
 		if place.is_left(): #山札が切れていない場合のみ獲得できる
 			gainedcard = place.pile.pop()
-			self.cards.dispile.append(gainedcard)
+			self.put_on_dispile(gainedcard)
 			gainedcard.gained(self)
-			place.zerocheck(self.gameinfo.game.field)
+			place.zerocheck(self.gameinfo.game.field) #変更が必要……
 	
 	def buycard(self, number):#カードは原則サプライから購入される　山札の番号をnumberとして与える。
 		place = self.gameinfo.get_supply(number)
@@ -50,10 +50,10 @@ class Player():
 			self.gaincard(number)
 			print(place.name)
 
-	def trashcard(self, object, place):
+	def trashcard(self, object, place): #廃棄時効果の発動のタイミングは？
 		number = place.index(object)
 		trashedcard = place.pop(number)
-		self.game.field.trash.append(trashedcard)
+		self.put_on_trash(trashedcard)
 		trashedcard.trashed(self)
 		
 	def phaseend(self): #現在のフェーズを終了し、次のフェーズへ移行する
@@ -63,7 +63,8 @@ class Player():
 		return self.cards.victorycount()
 	
 	def handcheck(self, type):
-		return self.cards.handcheck(type)
+		typec = self.gameinfo.cardtype_get(type)
+		return self.cards.handcheck(typec)
 	
 	def plusactions(self, number):
 		self.available.plusactions(number)
@@ -94,7 +95,12 @@ class Player():
 	
 	def is_action_left(self):
 		return self.available.is_action_left()
-
+		
+	def put_on_dispile(self, card):
+		self.cards.put_on_dispile(card)
+		
+	def put_on_trash(self, card):
+		self.gameinfo.put_on_trash(card)
 	
 class PlayerCards():
 	def __init__(self):
@@ -127,8 +133,7 @@ class PlayerCards():
 		return vp	
 	
 	def handcheck(self, type):
-		typec = card.cardtype.get(type)
-		type_cards = [x for x in self.hand if hasattr(x, typec)]
+		type_cards = [x for x in self.hand if hasattr(x, type)]
 		number = len(type_cards)
 		return number
 		
@@ -139,6 +144,9 @@ class PlayerCards():
 	
 	def hand_pickup(self, number):
 		return self.hand[number]
+		
+	def put_on_dispile(self, card):
+		self.dispile.append(card)
 		
 		
 class AvailablePerTurn():
@@ -185,6 +193,12 @@ class PlayerGameInfo():
 		
 	def playable(self, card):
 		return self.phase.playable(card)
+	
+	def put_on_trash(self, card):
+		self.game.put_on_trash(card)
+	
+	def cardtype_get(self, type):
+		return self.game.cardtype_get(type)
 		
 class HumanPlayer(Player):
 	def __init__(self, game):

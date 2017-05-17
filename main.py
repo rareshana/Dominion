@@ -20,6 +20,7 @@ class Game():
 		self.field = Field()  #場を生成
 		self.turnplayer = 0
 		self.turncount = 1
+		self.cardtype = card.CardType()
 		
 	def starter(self, supply):
 		for i in range(self.number):#各プレイヤーのデッキに銅貨を7枚、屋敷を3枚ずつ配る
@@ -88,8 +89,7 @@ class Game():
 		self.changeturn()
 		self.turncount += 1
 		return 1
-	
-		
+
 	def endgame(self):
 	#勝利点が同じであるときは、よりターン数が少なかったプレイヤーの勝ち。
 		print("ゲーム終了です")
@@ -101,7 +101,12 @@ class Game():
 		
 	def get_supply(self, number):
 		return self.field.get_supply(number)
+	
+	def put_on_trash(self, card):
+		self.field.put_on_trash(card)
 
+	def cardtype_get(self, type):
+		return self.cardtype.get(type)
 		
 
 		
@@ -132,6 +137,9 @@ class Field():
 		
 	def get_supply(self, number):
 		return self.supnumber.get(number)
+	
+	def put_on_trash(self, card):
+		self.trash.append(card)
 		
 		
 class Turn():
