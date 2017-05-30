@@ -1,9 +1,9 @@
 class CardType():
-	def __init__(self):
-		self.cardtype = {'action':'isaction', 'treasure':'istreasure', 'victory':'isvictory', 'curse':'iscurse'}
+	cardtype = {'action':'isaction', 'treasure':'istreasure', 'victory':'isvictory', 'curse':'iscurse'}
 	
-	def get(self, type):
-		return self.cardtype.get(type)
+	@classmethod
+	def get_cardtype(cls, type):
+		return cls.cardtype.get(type)
 		
 class Card(): #カード
 	def __init__(self, ename, jname, cost, clas, type, set):
@@ -24,11 +24,24 @@ class Card(): #カード
 		pass
 		
 	def is_type(self, type):
-		return (hasattr(self, type))
+		typec = CardType.get_cardtype(type)
+		return (hasattr(self, typec))
+		
+	def is_action(self):
+		return self.is_type('action')
+	
+	def is_treasure(self):
+		return self.is_type('treasure')
+	
+	def is_victory(self):
+		return self.is_type('victory')
+	
+	def is_curse(self):
+		return self.is_type('curse')
 	
 	def is_victory_or_curse(self):
-		return (hasattr(self, 'isvictory') or hasattr(self, 'iscurse'))
-
+		return self.is_victory() or self.is_curse()
+		
 class TreasureCard(Card): #財宝カード
 	def __init__(self, ename, jname, cost, clas, type, set, value):
 		super().__init__(ename, jname, cost, clas, type, set)
@@ -162,6 +175,6 @@ class Feast(ActionCard):
 		super().__init__("Feast", "祝宴", 4, "王国", "アクション", "基本")
 	
 	def played(self, user):
-		user.trashcard(self, user.playarea)
+		user.trashcard(self, user.cards.playarea)
 		user.what_gain_undercost(5)
 		

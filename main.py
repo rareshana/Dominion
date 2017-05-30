@@ -20,7 +20,6 @@ class Game():
 		self.field = Field()  #場を生成
 		self.turnplayer = 0
 		self.turncount = 1
-		self.cardtype = card.CardType()
 		
 	def starter(self, supply):
 		for i in range(self.number):#各プレイヤーのデッキに銅貨を7枚、屋敷を3枚ずつ配る
@@ -105,8 +104,8 @@ class Game():
 	def put_on_trash(self, card):
 		self.field.put_on_trash(card)
 
-	def cardtype_get(self, type):
-		return self.cardtype.get(type)
+	def add_zeropile(self):
+		self.field.add_zeropile()
 		
 
 		
@@ -128,7 +127,7 @@ class Field():
 		self.supnumber.update(supactnum)  #サプライの場に番号を対応付けた
 	
 	def is_game_set(self):
-		if self.zeropile >= 3 or len(self.supnumber.get(7).pile) == 0:
+		if Field.zeropile >= 3 or len(self.get_supply(7)) == 0:
 			return True
 		return False
 	
@@ -140,6 +139,9 @@ class Field():
 	
 	def put_on_trash(self, card):
 		self.trash.append(card)
+	
+	def add_zeropile(self):
+		Field.zeropile += 1
 		
 		
 class Turn():
@@ -289,9 +291,13 @@ class Pile():  #サプライのカードの山
 		self.name = ""  #山札に置かれているカードの名前
 		self.cost = -1  #山札に置かれているカードのコスト
 		
-	def zerocheck(self, field):  #山をチェックし、それが残り0枚ならzeropileをインクリメントする
+	#def zerocheck(self, field):  #山をチェックし、それが残り0枚ならzeropileをインクリメントする
+		#if len(self.pile) == 0:
+			#field.zeropile += 1
+	def zerocheck(self):
 		if len(self.pile) == 0:
-			field.zeropile += 1
+			return 1
+		return 0
 			
 	def is_left(self):
 		return (len(self.pile) > 0)

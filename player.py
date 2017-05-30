@@ -37,7 +37,8 @@ class Player():
 			gainedcard = place.pile.pop()
 			self.put_on_dispile(gainedcard)
 			gainedcard.gained(self)
-			place.zerocheck(self.gameinfo.game.field) #変更が必要……
+			#place.zerocheck(self.gameinfo.game.field) #変更が必要……
+			self.zerocheck_pile(place)
 	
 	def buycard(self, number):#カードは原則サプライから購入される　山札の番号をnumberとして与える。
 		place = self.gameinfo.get_supply(number)
@@ -63,7 +64,7 @@ class Player():
 		return self.cards.victorycount()
 	
 	def handcheck(self, type):
-		typec = self.gameinfo.cardtype_get(type)
+		typec = card.CardType.get_cardtype(type)
 		return self.cards.handcheck(typec)
 	
 	def plusactions(self, number):
@@ -101,6 +102,11 @@ class Player():
 		
 	def put_on_trash(self, card):
 		self.gameinfo.put_on_trash(card)
+		
+	def zerocheck_pile(self, place):
+		if place.zerocheck():
+			self.gameinfo.add_zeropile()
+		
 	
 class PlayerCards():
 	def __init__(self):
@@ -197,8 +203,11 @@ class PlayerGameInfo():
 	def put_on_trash(self, card):
 		self.game.put_on_trash(card)
 	
-	def cardtype_get(self, type):
-		return self.game.cardtype_get(type)
+	def get_cardtype(self, type):
+		return CardType.get_cardtype(type)
+	
+	def add_zeropile(self):
+		self.game.add_zeropile()
 		
 class HumanPlayer(Player):
 	def __init__(self, game):
@@ -245,7 +254,7 @@ class HumanPlayer(Player):
 		flag = 1
 		while flag:
 			answer = int(input())
-			place = self.game.field.supnumber.get(answer)
+			place = self.gameinfo.get_supply(answer)
 			flag = self.is_gainable(answer, place, number)
 				
 	def is_gainable(self, answer, place, number):
