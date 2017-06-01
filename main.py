@@ -127,7 +127,7 @@ class Field():
 		self.supnumber.update(supactnum)  #サプライの場に番号を対応付けた
 	
 	def is_game_set(self):
-		if Field.zeropile >= 3 or len(self.get_supply(7)) == 0:
+		if Field.zeropile >= 3 or self.get_supply(7).zerocheck():
 			return True
 		return False
 	
@@ -175,10 +175,8 @@ class Phase():
 class StartPhase(Phase):
 	def __init__(self, player):
 		super().__init__(player)
-		self.player.available.rest_actions = 1
-		self.player.available.rest_buys = 1
-		self.player.available.coins = 0
-		
+		self.player.turnstart()
+
 		
 class ActionPhase(Phase):
 	def __init__(self, player):
@@ -186,7 +184,7 @@ class ActionPhase(Phase):
 		print("アクションフェイズです")
 	
 	def start(self):
-		while (isinstance(self.player.gameinfo.phase, ActionPhase)):
+		while (self.player.phase_judged(ActionPhase)):
 			self.what_do()
 	
 	def what_do(self):
@@ -201,11 +199,11 @@ class ActionPhase(Phase):
 		#分けられそう		
 		
 	def playable(self, card):
-		return hasattr(card, 'isaction')
+		return card.is_action()
 		
 	def rightplayed(self, when):
 		if when == 'right':
-			self.player.available.rest_actions -= 1  #カードがプレイされたらアクション権を1減らす
+			self.player.plusactions(-1)  #カードがプレイされたらアクション権を1減らす
 			
 class TreasurePhase(Phase):
 	def __init__(self, player):
@@ -238,7 +236,8 @@ class TreasurePhase(Phase):
 			flag = self.player.what_coin_play()
 			
 	def playable(self, card):
-		return hasattr(card, 'istreasure')
+		return card.is_treasure()
+		
 		
 class BuyPhase(Phase):
 	def __init__(self, player, field):
@@ -247,7 +246,7 @@ class BuyPhase(Phase):
 		self.field = field
 		
 	def start(self):
-		while (isinstance(self.player.gameinfo.phase, BuyPhase)):
+		while self.player.phase_judged(BuyPhase):
 			self.is_ai_or_human()
 				
 	def is_ai_or_human(self):
@@ -260,13 +259,13 @@ class BuyPhase(Phase):
 			return
 			
 	def is_continue_ai(self):
-		if self.player.available.rest_buys > 0:
+		if self.player.is_buys_left():
 			self.player.what_buy()
 			return
 		self.player.phaseend()
 	
 	def is_continue_human(self):
-		if self.player.available.rest_buys > 0:
+		if self.player.is_buys_left():
 			print("購入するカードの番号を入力してください")
 			self.player.what_buy()
 			return

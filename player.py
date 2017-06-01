@@ -106,6 +106,15 @@ class Player():
 	def zerocheck_pile(self, place):
 		if place.zerocheck():
 			self.gameinfo.add_zeropile()
+			
+	def phase_judged(self, phase):
+		return self.gameinfo.phase_judged(phase)
+	
+	def turnstart(self):
+		self.available.turnstart()
+	
+	def is_buys_left(self):
+		return self.available.is_buys_left()
 		
 	
 class PlayerCards():
@@ -161,6 +170,9 @@ class AvailablePerTurn():
 		self.rest_buys = 1
 		self.coins = 0
 	
+	def turnstart(self):
+		self.__init__()
+	
 	def plusactions(self, number):
 		self.rest_actions += number
 	
@@ -172,6 +184,9 @@ class AvailablePerTurn():
 	
 	def is_action_left(self):
 		return (self.rest_actions > 0)
+	
+	def is_buys_left(self):
+		return (self.rest_buys > 0)
 		
 class PlayerGameInfo():
 	def __init__(self, game):
