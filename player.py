@@ -50,15 +50,10 @@ class Player():
 			self.gaincard(number)
 			print(place.name)
 
-	def trashcard(self, object, place=None): #廃棄時効果の発動のタイミングは？
+	def trashcard(self, object): #廃棄時効果の発動のタイミングは？
 		if isinstance(object, card.Card):
-			if place != None:
-				number = place.index(object)
-				trashedcard = place.pop(number)
-			else:
-				trashedcard = object
-			self.put_on_trash(trashedcard)
-			trashedcard.trashed(self)
+			self.put_on_trash(object)
+			object.trashed(self)
 			return
 		if isinstance(object, list):
 			[self.trashcard(i) for i in object]
@@ -144,7 +139,10 @@ class Player():
 		
 	def hand_pop(self, number):
 		return self.cards.hand_pop(number)
-	
+		
+	def playarea_pop(self, card):
+		self.cards.playarea_pop(card)
+		
 class PlayerCards():
 	def __init__(self):
 		self.deck = [] #デッキ 下から上へ
@@ -231,6 +229,11 @@ class PlayerCards():
 	
 	def add_dispile(self, cards):
 		self.dispile.extend(cards)
+	
+	def playarea_pop(self, card):
+		number = self.playarea.index(card)
+		popcard = self.playarea.pop(number)
+		return popcard
 		
 		
 class AvailablePerTurn():
