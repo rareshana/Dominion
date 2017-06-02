@@ -170,11 +170,18 @@ class Chancellor(ActionCard): #宰相
 			pass
 			return
 
-class Feast(ActionCard):
+class Feast(ActionCard): #祝宴
 	def __init__(self):
 		super().__init__("Feast", "祝宴", 4, "王国", "アクション", "基本")
 	
 	def played(self, user):
 		user.trashcard(self, user.cards.playarea)
 		user.what_gain_undercost(5)
-		
+
+
+class Workshop(ActionCard): #工房
+	def __init__(self):
+		super().__init__("Workshop", "工房", 3, "王国", "アクション", "基本")
+	
+	def played(self, user):
+		user.what_gain_undercost(4)

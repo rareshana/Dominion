@@ -119,6 +119,7 @@ class Player():
 	def cleanup(self):
 		self.cards.cleanup_cards()
 		self.draw(5)
+
 	
 class PlayerCards():
 	def __init__(self):
