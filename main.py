@@ -278,11 +278,8 @@ class CleanUpPhase(Phase):
 		self.cleanup()
 		
 	def cleanup(self):
-		self.player.cards.dispile.extend(self.player.cards.playarea)
-		self.player.cards.playarea.clear()
-		self.player.cards.dispile.extend(self.player.cards.hand)
-		self.player.cards.hand.clear()
-		self.player.draw(5)
+		self.player.cleanup()
+
 		
 class Pile():  #サプライのカードの山
 	def __init__(self):
@@ -290,10 +287,7 @@ class Pile():  #サプライのカードの山
 		self.name = ""  #山札に置かれているカードの名前
 		self.cost = -1  #山札に置かれているカードのコスト
 		
-	#def zerocheck(self, field):  #山をチェックし、それが残り0枚ならzeropileをインクリメントする
-		#if len(self.pile) == 0:
-			#field.zeropile += 1
-	def zerocheck(self):
+	def zerocheck(self): #山をチェックし、それが残り0枚ならzeropileをインクリメントする
 		if len(self.pile) == 0:
 			return 1
 		return 0

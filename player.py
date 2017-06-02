@@ -60,6 +60,9 @@ class Player():
 	def phaseend(self): #現在のフェーズを終了し、次のフェーズへ移行する
 		self.gameinfo.phaseend()
 	
+	def nextphase(self):
+		self.gameinfo.phaseend()
+	
 	def victorycount(self):
 		return self.cards.victorycount()
 	
@@ -90,9 +93,6 @@ class Player():
 		
 	def beginturn(self, turn):
 		self.gameinfo.beginturn(turn)
-		
-	def nextphase(self):
-		self.gameinfo.phaseend()
 	
 	def is_action_left(self):
 		return self.available.is_action_left()
@@ -116,6 +116,9 @@ class Player():
 	def is_buys_left(self):
 		return self.available.is_buys_left()
 		
+	def cleanup(self):
+		self.cards.cleanup_cards()
+		self.draw(5)
 	
 class PlayerCards():
 	def __init__(self):
@@ -162,6 +165,13 @@ class PlayerCards():
 		
 	def put_on_dispile(self, card):
 		self.dispile.append(card)
+	
+	def cleanup_cards(self):
+		self.dispile.extend(self.playarea)
+		self.playarea.clear()
+		self.dispile.extend(self.hand)
+		self.hand.clear()
+		
 		
 		
 class AvailablePerTurn():
