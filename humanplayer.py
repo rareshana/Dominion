@@ -55,13 +55,13 @@ class HumanPlayer(player.Player):
 		print("コストが高すぎます")
 		return 1
 	
-	def choose_discard_from_hand(self):
+	def pop_from_hand(self):
 		print([i.jname for i in self.cards.hand])
 		answer = int(input())
 		if answer == -1:
 			return -1
-		discard = self.hand_pop(answer)
-		return discard
+		card = self.hand_pop(answer)
+		return card
 		
 			
 			

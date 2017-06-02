@@ -50,11 +50,22 @@ class Player():
 			self.gaincard(number)
 			print(place.name)
 
-	def trashcard(self, object, place): #廃棄時効果の発動のタイミングは？
-		number = place.index(object)
-		trashedcard = place.pop(number)
-		self.put_on_trash(trashedcard)
-		trashedcard.trashed(self)
+	def trashcard(self, object, place=None): #廃棄時効果の発動のタイミングは？
+		if isinstance(object, card.Card):
+			if place != None:
+				number = place.index(object)
+				trashedcard = place.pop(number)
+			else:
+				trashedcard = object
+			self.put_on_trash(trashedcard)
+			trashedcard.trashed(self)
+			return
+		if isinstance(object, list):
+			[self.trashcard(i) for i in object]
+		
+		
+	def put_on_trash(self, card):
+		self.gameinfo.put_on_trash(card)
 		
 	def phaseend(self): #現在のフェーズを終了し、次のフェーズへ移行する
 		self.gameinfo.phaseend()
@@ -98,9 +109,6 @@ class Player():
 		
 	def put_on_dispile(self, card):
 		self.cards.put_on_dispile(card)
-		
-	def put_on_trash(self, card):
-		self.gameinfo.put_on_trash(card)
 		
 	def zerocheck_pile(self, place):
 		if place.zerocheck():

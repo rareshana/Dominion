@@ -220,7 +220,7 @@ class Cellar(ActionCard): #地下貯蔵庫
 		choices = []
 		while True:
 			print("捨て札にするカードを選んでください")
-			discarded = user.choose_discard_from_hand()
+			discarded = user.pop_from_hand()
 			if discarded == -1:
 				break
 			choices.append(discarded)
@@ -228,3 +228,17 @@ class Cellar(ActionCard): #地下貯蔵庫
 		print(number)
 		user.put_on_dispile(choices)
 		user.draw(number)
+		
+class Chapel(ActionCard): #礼拝堂
+	def __init__(self):
+		super().__init__("Chapel", "礼拝堂", 2, "王国", "アクション", "基本")
+	
+	def played(self, user):
+		choices = []
+		for i in range(4):
+			print("廃棄するカードを選んでください")
+			trashed = user.pop_from_hand()
+			if trashed == -1:
+				break
+			choices.append(trashed)
+		user.trashcard(choices)
