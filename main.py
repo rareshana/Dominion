@@ -182,7 +182,6 @@ class ActionPhase(Phase):
 	def __init__(self, player):
 		super().__init__(player)
 		print("アクションフェイズです")
-		print(len(player.cards.deck) + len(player.cards.dispile) + len(player.cards.hand))
 	
 	def start(self):
 		while (self.player.phase_judged(ActionPhase)):
