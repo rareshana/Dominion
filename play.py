@@ -3,6 +3,7 @@ import random
 import card
 import player
 import aiplayer
+import humanplayer
 
 def game_setup(number, nontest=None):
 	game = main.Game(number)
@@ -26,8 +27,8 @@ def player_decide(game, nontest):
 	if nontest == None:
 		testplayer=[player.Player(game), player.Player(game), player.Player(game), player.Player(game)]
 		return testplayer
-	testplayer=[aiplayer.AIPlayer1(game), aiplayer.AIPlayer2(game), player.HumanPlayer(game), aiplayer.AIPlayer1(game)]
+	testplayer=[aiplayer.AIPlayer1(game), aiplayer.AIPlayer2(game), humanplayer.HumanPlayer(game), aiplayer.AIPlayer1(game)]
 	return testplayer
 	
 def supply_decide():
-	return [card.Smithy, card.Village, card.Woodcutter, card.Market, card.Laboratory, card.Festival, card.CouncilRoom, card.Chancellor, card.Adventurer, card.Workshop]
+	return [card.Smithy, card.Village, card.Woodcutter, card.Market, card.Laboratory, card.Festival, card.CouncilRoom, card.Cellar, card.Adventurer, card.Workshop]

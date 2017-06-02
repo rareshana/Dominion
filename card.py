@@ -209,5 +209,22 @@ class Adventurer(ActionCard): #冒険者
 		print(tmp_not_treasure)
 		user.add_hand(tmp_treasure)
 		user.add_dispile(tmp_not_treasure)
+		
 			
-			
+class Cellar(ActionCard): #地下貯蔵庫
+	def __init__(self):
+		super().__init__("Cellar", "地下貯蔵庫", 2, "王国", "アクション", "基本")
+	
+	def played(self, user):
+		user.plusactions(1)
+		choices = []
+		while True:
+			print("捨て札にするカードを選んでください")
+			discarded = user.choose_discard_from_hand()
+			if discarded == -1:
+				break
+			choices.append(discarded)
+		number = len(choices)
+		print(number)
+		user.put_on_dispile(choices)
+		user.draw(number)

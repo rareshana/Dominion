@@ -37,7 +37,6 @@ class Player():
 			gainedcard = place.pile.pop()
 			self.put_on_dispile(gainedcard)
 			gainedcard.gained(self)
-			#place.zerocheck(self.gameinfo.game.field) #変更が必要……
 			self.zerocheck_pile(place)
 	
 	def buycard(self, number):#カードは原則サプライから購入される　山札の番号をnumberとして与える。
@@ -134,6 +133,9 @@ class Player():
 	
 	def add_dispile(self, cards):
 		self.cards.add_dispile(cards)
+		
+	def hand_pop(self, number):
+		return self.cards.hand_pop(number)
 	
 class PlayerCards():
 	def __init__(self):
@@ -143,14 +145,10 @@ class PlayerCards():
 		self.playarea = [] #各プレイヤーの場 左から右へ
 	
 	def draw(self, number):
+		if number == 0:
+			return
 		if (number > len(self.deck)) and len(self.deck) >= 0: #デッキの枚数が足りず、かつ捨て札があるとき
 			number = self.dispile_to_deck(number)
-			#number -= len(self.deck)
-			#self.hand.extend(self.deck[::-1])
-			#self.deck.clear()
-			#self.deck.extend(self.dispile)
-			#self.dispile.clear()
-			#self.shuffle()
 		drawcard = self.deck[-number:]
 		self.deck = self.deck[:-number]
 		self.hand.extend(drawcard[::-1])
@@ -188,8 +186,14 @@ class PlayerCards():
 	def hand_pickup(self, number):
 		return self.hand[number]
 		
-	def put_on_dispile(self, card):
-		self.dispile.append(card)
+	def hand_pop(self, number):
+		return self.hand.pop(number)
+	
+	def put_on_dispile(self, cards):
+		if isinstance(cards, card.Card):
+			self.dispile.append(cards)
+		elif isinstance(cards, list):
+			self.dispile.extend(cards)
 	
 	def cleanup_cards(self):
 		self.dispile.extend(self.playarea)
@@ -280,61 +284,6 @@ class PlayerGameInfo():
 	
 	def add_zeropile(self):
 		self.game.add_zeropile()
-		
-class HumanPlayer(Player):
-	def __init__(self, game):
-		super().__init__(game)
-		self.isHuman = 1
-		
-	def what_coin_play(self):
-		number = int(input())
-		if number == -1:
-			return -1
-		self.playcard(number, 'right')
-		return False
-			
-	def what_action(self):
-		number = int(input())
-		if number == -1:
-			self.phaseend()
-			return
-		self.playcard(number, 'right')
-			
-	def what_buy(self):
-		number = int(input())
-		if number == -1:
-			self.phaseend()
-			return
-		self.buycard(number)
-		
-	def chancellor_effect(self):
-		print("山札をすべて捨て札にしますか y/n")
-		flag = 1
-		while flag:
-			answer = input()
-			flag = self.input_y_or_n(answer)
-		return answer
-		
-	def input_y_or_n(self, answer):
-		if answer == 'y' or answer == 'n':
-			return 0
-		print("yまたはnで答えてください")
-		return 1
-				
-	def what_gain_undercost(self, number):
-		print("{0}コスト以下のカードを獲得します".format(number))
-		flag = 1
-		while flag:
-			answer = int(input())
-			place = self.gameinfo.get_supply(answer)
-			flag = self.is_gainable(answer, place, number)
-				
-	def is_gainable(self, answer, place, number):
-		if place.cost <= number:
-			self.gaincard(answer)
-			return 0
-		print("コストが高すぎます")
-		return 1
 
 
 #任意のプレイヤーは捨て札の一番上のカードをいつでも見ることができる
