@@ -119,7 +119,21 @@ class Player():
 	def cleanup(self):
 		self.cards.cleanup_cards()
 		self.draw(5)
+	
+	def is_deck_empty(self):
+		return self.cards.is_deck_empty()
+		
+	def is_dispile_empty(self):
+		return self.cards.is_dispile_empty()
 
+	def reveal_from_deck(self):
+		return self.cards.reveal_from_deck()
+	
+	def add_hand(self, cards):
+		self.cards.add_hand(cards)
+	
+	def add_dispile(self, cards):
+		self.cards.add_dispile(cards)
 	
 class PlayerCards():
 	def __init__(self):
@@ -130,18 +144,28 @@ class PlayerCards():
 	
 	def draw(self, number):
 		if (number > len(self.deck)) and len(self.deck) >= 0: #デッキの枚数が足りず、かつ捨て札があるとき
-			number -= len(self.deck)
-			self.hand.extend(self.deck[::-1])
-			self.deck.clear()
-			self.deck.extend(self.dispile)
-			self.dispile.clear()
-			self.shuffle()
+			number = self.dispile_to_deck(number)
+			#number -= len(self.deck)
+			#self.hand.extend(self.deck[::-1])
+			#self.deck.clear()
+			#self.deck.extend(self.dispile)
+			#self.dispile.clear()
+			#self.shuffle()
 		drawcard = self.deck[-number:]
 		self.deck = self.deck[:-number]
 		self.hand.extend(drawcard[::-1])
 	
 	def shuffle(self):
 		random.shuffle(self.deck)
+	
+	def dispile_to_deck(self, number):
+		number -= len(self.deck)
+		self.hand.extend(self.deck[::-1])
+		self.deck.clear()
+		self.deck.extend(self.dispile)
+		self.dispile.clear()
+		self.shuffle()
+		return number
 
 	def victorycount(self):
 		vp = 0
@@ -173,6 +197,28 @@ class PlayerCards():
 		self.dispile.extend(self.hand)
 		self.hand.clear()
 		
+	def is_deck_empty(self):
+		if self.deck == []:
+			return True
+		return False
+		
+	def is_dispile_empty(self):
+		if self.dispile == []:
+			return True
+		return False
+	
+	def reveal_from_deck(self):
+		if len(self.deck) == 0 and len(self.deck) >= 0: #デッキの枚数が足りず、かつ捨て札があるとき
+			self.dispile_to_deck(1)
+		revealed_card = self.deck[-1:][0]
+		self.deck = self.deck[:-1]
+		return revealed_card
+	
+	def add_hand(self, cards):
+		self.hand.extend(cards)
+	
+	def add_dispile(self, cards):
+		self.dispile.extend(cards)
 		
 		
 class AvailablePerTurn():

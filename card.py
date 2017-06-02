@@ -185,3 +185,29 @@ class Workshop(ActionCard): #工房
 	
 	def played(self, user):
 		user.what_gain_undercost(4)
+
+
+class Adventurer(ActionCard): #冒険者
+	def __init__(self):
+		super().__init__("Adventurer", "冒険者", 6, "王国", "アクション", "基本")
+	
+	def played(self, user):
+		tmp_treasure = []
+		tmp_not_treasure = []
+		
+		while len(tmp_treasure) < 2:
+			if user.is_deck_empty() and user.is_dispile_empty():
+				break
+				
+			tmp = user.reveal_from_deck()
+			if tmp.is_treasure():
+				tmp_treasure.append(tmp)
+			else:
+				tmp_not_treasure.append(tmp)
+		
+		print(tmp_treasure)
+		print(tmp_not_treasure)
+		user.add_hand(tmp_treasure)
+		user.add_dispile(tmp_not_treasure)
+			
+			
