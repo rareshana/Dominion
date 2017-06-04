@@ -88,10 +88,7 @@ class Player():
 		
 	def what_buy(self):
 		pass
-		
-	def chancellor_effect(self):
-		return 'n'
-	
+
 	def what_gain(self, number):
 		pass
 		
@@ -126,6 +123,9 @@ class Player():
 		
 	def is_dispile_empty(self):
 		return self.cards.is_dispile_empty()
+	
+	def is_hand_empty(self):
+		return self.cards.is_hand_empty()
 
 	def reveal_from_deck(self):
 		return self.cards.reveal_from_deck()
@@ -144,6 +144,9 @@ class Player():
 	
 	def hand_pickup(self, number):
 		return self.cards.hand_pickup(number)
+	
+	def is_card_in_hand(self, name):
+		return self.cards.is_card_in_hand(name)
 		
 class PlayerCards():
 	def __init__(self):
@@ -228,6 +231,11 @@ class PlayerCards():
 			return True
 		return False
 	
+	def is_hand_empty(self):
+		if self.hand == []:
+			return True
+		return False
+	
 	def reveal_from_deck(self):
 		if len(self.deck) == 0 and len(self.deck) >= 0: #デッキの枚数が足りず、かつ捨て札があるとき
 			self.dispile_to_deck(1)
@@ -239,7 +247,9 @@ class PlayerCards():
 		number = self.playarea.index(card)
 		popcard = self.playarea.pop(number)
 		return popcard
-		
+	
+	def is_card_in_hand(self, name):
+		return name in [x.ename for x in self.hand]
 		
 class AvailablePerTurn():
 	def __init__(self):

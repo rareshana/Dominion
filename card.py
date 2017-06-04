@@ -296,8 +296,33 @@ class Mine(ActionCard): #鉱山
 		user.what_gain_undercost_treasure(trashed.cost + 3)
 		#手札に加える処理ができない　後で書く　カードを獲得する動作を、獲得するカードを選ぶ段階と、獲得されるべき場所に放り込むメソッドに分けて実装する必要がありそう
 
+class Remodel(ActionCard): #改築
+	def __init__(self):
+		super().__init__("Remodel", "改築", 4, "王国", "アクション", "基本")
+	
+	def played(self, user):
+		if user.is_hand_empty():
+			print("廃棄するカードがありません")
+			return
+		while True:
+			print("廃棄するカードを選んでください")
+			trashed = user.pop_from_hand()
+			if trashed == -1:
+				continue
+			break
+		user.trashcard(trashed)
+		user.what_gain_undercost(trashed.cost + 2)
 
-		
-		
-				
-		
+class MoneyLender(ActionCard): #金貸し
+	def __init__(self):
+		super().__init__("MoneyLender", "金貸し", 4, "王国", "アクション", "基本")
+	
+	def played(self, user):
+		if not user.is_card_in_hand('Copper'):
+			print("廃棄するカードがありません")
+			return
+		list = [x.ename for x in user.cards.hand]
+		number = list.index('Copper')
+		trashed = user.hand_pop(number)
+		user.trashcard(trashed)
+		user.pluscoins(3)
