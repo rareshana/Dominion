@@ -135,6 +135,9 @@ class Player():
 	
 	def add_dispile(self, cards):
 		self.cards.add_dispile(cards)
+	
+	def add_deck(self, cards):
+		self.cards.add_deck(cards)
 		
 	def hand_pop(self, number):
 		return self.cards.hand_pop(number)
@@ -218,6 +221,12 @@ class PlayerCards():
 			self.hand.append(cards)
 		elif isinstance(cards, list):
 			self.hand.extend(cards)
+	
+	def add_deck(self, cards):
+		if isinstance(cards, card.Card):
+			self.deck.append(cards)
+		elif isinstance(cards, list):
+			self.deck.extend(cards)
 	
 	def cleanup_cards(self):
 		self.dispile.extend(self.playarea)

@@ -384,3 +384,22 @@ class Witch(ActionCard, AttackCard):
 		user.use_attack()
 		user.draw(2)
 		[x.gaincard(1) for x in user.other_players]
+
+class Spy(ActionCard, AttackCard):
+	def __init__(self):
+		super().__init__("Spy", "密偵", 4, "王国", "アクション-アタック", "基本")
+	
+	def played(self, user):
+		user.use_attack()
+		user.draw(1)
+		user.plusactions(1)
+		for player in ([user] + user.other_players):
+			revealed = player.reveal_from_deck()
+			print(revealed.ename)
+			print("このカードを捨てますか/戻しますか(y/n)")
+			answer = user.answer_yn()
+			if answer == 'y':
+				player.put_on_dispile(revealed)
+			else:
+				player.add_deck(revealed)
+			
