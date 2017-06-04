@@ -402,4 +402,44 @@ class Spy(ActionCard, AttackCard):
 				player.put_on_dispile(revealed)
 			else:
 				player.add_deck(revealed)
+
+class Thief(ActionCard, AttackCard):
+	def __init__(self):
+		super().__init__("Thief", "泥棒", 4, "王国", "アクション-アタック", "基本")
+	
+	def played(self, user):
+		user.use_attack()
+		revealed = []
+		trasheds = []
+		for player in user.other_players:
+			revealed.append(player.reveal_from_deck())
+			revealed.append(player.reveal_from_deck())
+			print([card.ename for card in revealed])
+			if len([card for card in revealed if card.is_type('treasure')]) == 0:
+				print("廃棄するカードがありません")
+				player.put_on_dispile(revealed)
+				continue
+			while True:
+				print("廃棄する財宝カードを選んでください")
+				answer = int(input())
+				trashed = revealed[answer]
+				if trashed.is_treasure():
+					break
+			trasheds.append(trashed)
+			revealed.remove(trashed)
+			player.put_on_dispile(revealed)
+			revealed.clear()
+		
+		while True:
+			print("獲得する財宝カードを選んでください")
+			print(trasheds)
+			answer = int(input())
+			if answer == -1:
+				break
+			gained = trasheds.pop(answer)
+			user.put_on_dispile(gained) #獲得時効果があるカードの獲得時効果が発動しない　やはりgaincardの挙動を見直す必要あり
+		user.trashcard(trasheds)
+			
+			
+			
 			
