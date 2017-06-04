@@ -141,6 +141,9 @@ class Player():
 		
 	def playarea_pop(self, card):
 		self.cards.playarea_pop(card)
+	
+	def hand_pickup(self, number):
+		return self.cards.hand_pickup(number)
 		
 class PlayerCards():
 	def __init__(self):

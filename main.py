@@ -56,9 +56,14 @@ class Game():
 			
 	def makesupply(self, number, placenum, cardclass):  #山札を作る(引数は、枚数、場所、カードを生成するコマンド)
 		cards = [cardclass for i in range(number)]
-		self.field.supnumber.get(placenum).pile.extend(cards)
-		self.field.supnumber.get(placenum).name = self.field.supnumber.get(placenum).pile[0].ename
-		self.field.supnumber.get(placenum).cost = self.field.supnumber.get(placenum).pile[0].cost
+		self.get_supply(placenum).pile.extend(cards)
+		self.get_supply(placenum).name = self.get_cardinfo(placenum).ename
+		self.get_supply(placenum).cost = self.get_cardinfo(placenum).cost
+		list = card.CardType.get_typelist()
+		for x in list:
+			if hasattr(self.get_cardinfo(placenum),x):
+				setattr(self.get_supply(placenum), x, 1)
+		
 	
 	def beginturn(self, playernum):  #numに対応するプレイヤーのターンを開始する
 		print("")

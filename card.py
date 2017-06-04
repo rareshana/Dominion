@@ -4,6 +4,10 @@ class CardType():
 	@classmethod
 	def get_cardtype(cls, type):
 		return cls.cardtype.get(type)
+	
+	@classmethod
+	def get_typelist(cls):
+		return cls.cardtype.values()
 		
 class Card(): #カード
 	def __init__(self, ename, jname, cost, clas, type, set):
@@ -276,12 +280,24 @@ class Mine(ActionCard): #鉱山
 		super().__init__("Mine", "鉱山", 5, "王国", "アクション", "基本")
 	
 	def played(self, user):
-		pass
-		#if 
-		#print("廃棄するカードを選んでください")
-			#trashed = user.pop_from_hand()
-			#if trashed == -1:
-				#break
-			#choices.append(trashed)
+		if not user.handcheck('treasure'):
+			print("廃棄するカードがありません")
+			return
+		while True:
+			print("廃棄する財宝カードを選んでください")
+			trashed = user.choose_from_hand()
+			if trashed == -1:
+				continue
+			if trashed.is_treasure():
+				break
+		number = user.cards.hand.index(trashed)
+		user.hand_pop(number)
+		user.trashcard(trashed)
+		user.what_gain_undercost_treasure(trashed.cost + 3)
+		#手札に加える処理ができない　後で書く　カードを獲得する動作を、獲得するカードを選ぶ段階と、獲得されるべき場所に放り込むメソッドに分けて実装する必要がありそう
+
+
+		
+		
 				
 		
