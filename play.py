@@ -18,9 +18,9 @@ def player_entry(game, playerr, people, nontest=None):
 	for i in range(people):
 		playerr.append(testplayer[i])
 
-	for i in range(people): #自分以外のプレイヤーのリストをothers に入れる
-		tmp = playerr[:]
-		tmp.remove(playerr[i])
+	for i in range(people): #自分以外のプレイヤーのリストをother_players に入れる
+		tmp = playerr[i+1:]
+		tmp.extend(playerr[:i])
 		playerr[i].other_players = tmp
 
 def player_decide(game, nontest):
@@ -31,4 +31,4 @@ def player_decide(game, nontest):
 	return testplayer
 	
 def supply_decide():
-	return [card.Smithy, card.Garden, card.Moat, card.Remodel, card.MoneyLender, card.Festival, card.CouncilRoom, card.Cellar, card.Adventurer, card.Workshop]
+	return [card.Smithy, card.Garden, card.Moat, card.Witch, card.MoneyLender, card.Festival, card.CouncilRoom, card.Cellar, card.Adventurer, card.Workshop]

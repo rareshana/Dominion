@@ -147,6 +147,9 @@ class Player():
 	
 	def is_card_in_hand(self, name):
 		return self.cards.is_card_in_hand(name)
+	
+	def use_attack(self):
+		pass
 		
 class PlayerCards():
 	def __init__(self):

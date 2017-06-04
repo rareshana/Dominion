@@ -1,5 +1,5 @@
 class CardType():
-	cardtype = {'action':'isaction', 'treasure':'istreasure', 'victory':'isvictory', 'curse':'iscurse', 'reaction':'isreaction'}
+	cardtype = {'action':'isaction', 'treasure':'istreasure', 'victory':'isvictory', 'curse':'iscurse', 'reaction':'isreaction', 'attack':'isattack'}
 	
 	@classmethod
 	def get_cardtype(cls, type):
@@ -46,6 +46,9 @@ class Card(): #カード
 	def is_reaction(self):
 		return self.is_type('reaction')
 	
+	def is_attack(self):
+		return self.is_type('attack')
+	
 	def is_victory_or_curse(self):
 		return self.is_victory() or self.is_curse()
 		
@@ -67,13 +70,12 @@ class VictoryCard(Card): #勝利点カード
 		pass
 	
 class CurseCard(Card): #呪いカード
-	def __init__(self, ename, jname, cost, clas, type, set, value):
+	def __init__(self, ename, jname, cost, clas, type, set):
 		super().__init__(ename, jname, cost, clas, type, set)
-		self.vicpts = value
 		self.iscurse = 1 #呪いカードなら1
 	
 	def vicpts(self, player):
-		return self.vicpts
+		pass
 		
 class ActionCard(Card): #アクションカード
 	def __init__(self, ename, jname, cost, clas, type, set):
@@ -84,6 +86,11 @@ class ReactionCard(Card): #リアクションカード
 	def __init__(self, ename, jname, cost, clas, type, set):
 		super().__init__(ename, jname, cost, clas, type, set)
 		self.isreaction = 1 #リアクションカードなら1
+
+class AttackCard(Card): #アタックカード
+	def __init__(self, ename, jname, cost, clas, type, set):
+		super().__init__(ename, jname, cost, clas, type, set)
+		self.isattack = 1 #アタックカードなら1
 		
 class Copper(TreasureCard): #銅貨
 	def __init__(self):
@@ -120,8 +127,11 @@ class Province(VictoryCard): #属州
 		
 class Curse(CurseCard): #呪い
 	def __init__(self):
-		super().__init__("Curse", "呪い", 0, "基本", "呪い", "基本", -1)
-	
+		super().__init__("Curse", "呪い", 0, "基本", "呪い", "基本")
+		
+	def vicpts(self, player):
+		return -1
+
 class Garden(VictoryCard): #庭園
 	def __init__(self):
 		super().__init__("Garden", "庭園", 4, "王国", "勝利点", "基本")
@@ -365,4 +375,12 @@ class Moat(ActionCard, ReactionCard): #堀
 	
 	def reacted(self):
 		pass
+
+class Witch(ActionCard, AttackCard):
+	def __init__(self):
+		super().__init__("Witch", "魔女", 5, "王国", "アクション-アタック", "基本")
 	
+	def played(self, user):
+		user.use_attack()
+		user.draw(2)
+		[x.gaincard(1) for x in user.other_players]
