@@ -181,7 +181,8 @@ class PlayerCards():
 		self.deck.extend(self.dispile)
 		self.deck.extend(self.hand)
 		self.deck.extend(self.playarea)
-		vp = sum([i.vicpts for i in self.deck if i.is_victory_or_curse()])
+		print(len(self.deck))
+		vp = sum([i.vicpts(self) for i in self.deck if i.is_victory_or_curse()])
 		return vp	
 	
 	def handcheck(self, type):

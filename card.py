@@ -56,16 +56,22 @@ class TreasureCard(Card): #財宝カード
 		user.pluscoins(self.coins)
 
 class VictoryCard(Card): #勝利点カード
-	def __init__(self, ename, jname, cost, clas, type, set, value):
+	def __init__(self, ename, jname, cost, clas, type, set):
 		super().__init__(ename, jname, cost, clas, type, set)
-		self.vicpts = value
 		self.isvictory = 1 #勝利点カードなら1
-		
+	
+	def vicpts(self, player):
+		pass
+	
+	
 class CurseCard(Card): #呪いカード
 	def __init__(self, ename, jname, cost, clas, type, set, value):
 		super().__init__(ename, jname, cost, clas, type, set)
 		self.vicpts = value
 		self.iscurse = 1 #呪いカードなら1
+	
+	def vicpts(self, player):
+		return self.vicpts
 		
 class ActionCard(Card): #アクションカード
 	def __init__(self, ename, jname, cost, clas, type, set):
@@ -86,19 +92,35 @@ class Gold(TreasureCard): #金貨
 		
 class Estate(VictoryCard): #屋敷
 	def __init__(self):
-		super().__init__("Estate", "屋敷", 2, "基本", "勝利点", "基本", 1)
+		super().__init__("Estate", "屋敷", 2, "基本", "勝利点", "基本")
+	
+	def vicpts(self, player):
+		return 1
 		
 class Duchy(VictoryCard): #公領
 	def __init__(self):
-		super().__init__("Duchy", "公領", 5, "基本", "勝利点", "基本", 3)
+		super().__init__("Duchy", "公領", 5, "基本", "勝利点", "基本")
+	
+	def vicpts(self, player):
+		return 3
 
 class Province(VictoryCard): #属州
 	def __init__(self):
-		super().__init__("Province", "属州", 8, "基本", "勝利点", "基本", 6)
+		super().__init__("Province", "属州", 8, "基本", "勝利点", "基本")
+	
+	def vicpts(self,player):
+		return 6
 		
 class Curse(CurseCard): #呪い
 	def __init__(self):
 		super().__init__("Curse", "呪い", 0, "基本", "呪い", "基本", -1)
+	
+class Garden(VictoryCard): #庭園
+	def __init__(self):
+		super().__init__("Garden", "庭園", 4, "王国", "勝利点", "基本")
+	
+	def vicpts(self, deck):
+		return len(deck.deck)//10
 		
 class Smithy(ActionCard): #鍛冶屋
 	def __init__(self):
