@@ -1,5 +1,5 @@
 class CardType():
-	cardtype = {'action':'isaction', 'treasure':'istreasure', 'victory':'isvictory', 'curse':'iscurse'}
+	cardtype = {'action':'isaction', 'treasure':'istreasure', 'victory':'isvictory', 'curse':'iscurse', 'reaction':'isreaction'}
 	
 	@classmethod
 	def get_cardtype(cls, type):
@@ -43,6 +43,9 @@ class Card(): #カード
 	def is_curse(self):
 		return self.is_type('curse')
 	
+	def is_reaction(self):
+		return self.is_type('reaction')
+	
 	def is_victory_or_curse(self):
 		return self.is_victory() or self.is_curse()
 		
@@ -63,7 +66,6 @@ class VictoryCard(Card): #勝利点カード
 	def vicpts(self, player):
 		pass
 	
-	
 class CurseCard(Card): #呪いカード
 	def __init__(self, ename, jname, cost, clas, type, set, value):
 		super().__init__(ename, jname, cost, clas, type, set)
@@ -77,7 +79,12 @@ class ActionCard(Card): #アクションカード
 	def __init__(self, ename, jname, cost, clas, type, set):
 		super().__init__(ename, jname, cost, clas, type, set)
 		self.isaction = 1 #アクションカードなら1
-	
+
+class ReactionCard(Card): #リアクションカード
+	def __init__(self, ename, jname, cost, clas, type, set):
+		super().__init__(ename, jname, cost, clas, type, set)
+		self.isreaction = 1 #リアクションカードなら1
+		
 class Copper(TreasureCard): #銅貨
 	def __init__(self):
 		super().__init__("Copper", "銅貨", 0, "基本", "財宝", "基本", 1)
@@ -348,3 +355,14 @@ class MoneyLender(ActionCard): #金貸し
 		trashed = user.hand_pop(number)
 		user.trashcard(trashed)
 		user.pluscoins(3)
+
+class Moat(ActionCard, ReactionCard): #堀
+	def __init__(self):
+		super().__init__("Moat", "堀", 2, "王国", "アクション-リアクション", "基本")
+	
+	def played(self, user):
+		user.draw(2)
+	
+	def reacted(self):
+		pass
+	
