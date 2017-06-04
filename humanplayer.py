@@ -26,8 +26,8 @@ class HumanPlayer(player.Player):
 			return
 		self.buycard(number)
 		
-	def chancellor_effect(self):
-		print("山札をすべて捨て札にしますか y/n")
+	def answer_yn(self):
+		print("y/n")
 		flag = 1
 		while flag:
 			answer = input()

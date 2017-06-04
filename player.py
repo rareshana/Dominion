@@ -72,8 +72,7 @@ class Player():
 		return self.cards.victorycount()
 	
 	def handcheck(self, type):
-		typec = card.CardType.get_cardtype(type)
-		return self.cards.handcheck(typec)
+		return self.cards.handcheck(type)
 	
 	def plusactions(self, number):
 		self.available.plusactions(number)
@@ -180,7 +179,7 @@ class PlayerCards():
 		return vp	
 	
 	def handcheck(self, type):
-		type_cards = [x for x in self.hand if hasattr(x, type)]
+		type_cards = [x for x in self.hand if x.is_type(type)]
 		number = len(type_cards)
 		return number
 		
@@ -200,6 +199,15 @@ class PlayerCards():
 			self.dispile.append(cards)
 		elif isinstance(cards, list):
 			self.dispile.extend(cards)
+	
+	def add_dispile(self, cards):
+		self.dispile.extend(cards)
+	
+	def add_hand(self, cards):
+		if isinstance(cards, card.Card):
+			self.hand.append(cards)
+		elif isinstance(cards, list):
+			self.hand.extend(cards)
 	
 	def cleanup_cards(self):
 		self.dispile.extend(self.playarea)
@@ -223,12 +231,6 @@ class PlayerCards():
 		revealed_card = self.deck[-1:][0]
 		self.deck = self.deck[:-1]
 		return revealed_card
-	
-	def add_hand(self, cards):
-		self.hand.extend(cards)
-	
-	def add_dispile(self, cards):
-		self.dispile.extend(cards)
 	
 	def playarea_pop(self, card):
 		number = self.playarea.index(card)

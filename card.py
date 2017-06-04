@@ -161,7 +161,8 @@ class Chancellor(ActionCard): #宰相
 	
 	def played(self, user):
 		user.pluscoins(2)
-		answer = user.chancellor_effect()
+		print("山札をすべて捨て札にしますか")
+		answer = user.answer_yn()
 		if answer == 'y':
 			user.dispile.extend(user.deck[::-1])
 			user.deck.clear()
@@ -199,7 +200,6 @@ class Adventurer(ActionCard): #冒険者
 		while len(tmp_treasure) < 2:
 			if user.is_deck_empty() and user.is_dispile_empty():
 				break
-				
 			tmp = user.reveal_from_deck()
 			if tmp.is_treasure():
 				tmp_treasure.append(tmp)
@@ -229,6 +229,7 @@ class Cellar(ActionCard): #地下貯蔵庫
 		print(number)
 		user.put_on_dispile(choices)
 		user.draw(number)
+
 		
 class Chapel(ActionCard): #礼拝堂
 	def __init__(self):
@@ -243,3 +244,44 @@ class Chapel(ActionCard): #礼拝堂
 				break
 			choices.append(trashed)
 		user.trashcard(choices)
+
+		
+class Library(ActionCard): #書庫
+	def __init__(self):
+		super().__init__("Library", "書庫", 5, "王国", "アクション", "基本")
+	
+	def played(self, user):
+		tmp_action = []
+		while True:
+			if user.is_deck_empty() and user.is_dispile_empty():
+				break
+			if len(user.cards.hand) >= 7:
+				break
+			tmp = user.reveal_from_deck()
+			if tmp.is_action():
+				print(tmp)
+				print("このカードを手札に加えますか")
+				answer = user.answer_yn()
+				if answer == 'y':
+					user.add_hand(tmp)
+				else:
+					tmp_action.append(tmp)
+			else:
+				user.add_hand(tmp)
+		user.put_on_dispile(tmp_action)
+		
+
+class Mine(ActionCard): #鉱山
+	def __init__(self):
+		super().__init__("Mine", "鉱山", 5, "王国", "アクション", "基本")
+	
+	def played(self, user):
+		pass
+		#if 
+		#print("廃棄するカードを選んでください")
+			#trashed = user.pop_from_hand()
+			#if trashed == -1:
+				#break
+			#choices.append(trashed)
+				
+		
