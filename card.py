@@ -137,7 +137,7 @@ class Garden(VictoryCard): #庭園
 		super().__init__("Garden", "庭園", 4, "王国", "勝利点", "基本")
 	
 	def vicpts(self, deck):
-		return len(deck.deck)//10
+		return deck.deck_count()//10
 		
 class Smithy(ActionCard): #鍛冶屋
 	def __init__(self):

@@ -156,25 +156,35 @@ class Player():
 		
 class PlayerCards():
 	def __init__(self):
-		self.deck = [] #デッキ 下から上へ
-		self.hand = [] #手札 左から右へ
-		self.dispile = [] #捨て札の山 下から上へ
-		self.playarea = [] #各プレイヤーの場 左から右へ
+		self.deck = PlayerCardsList() #デッキ 下から上へ
+		self.hand = PlayerCardsList() #手札 左から右へ
+		self.dispile = PlayerCardsList() #捨て札の山 下から上へ
+		self.playarea = PlayerCardsList() #各プレイヤーの場 左から右へ
 	
+	
+	def is_deck_empty(self):
+		return self.deck.is_empty()
+		
+	def is_dispile_empty(self):
+		return self.dispile.is_empty()
+	
+	def is_hand_empty(self):
+		return self.hand.is_empty()
+	
+	def shuffle(self):
+		self.deck.shuffle()
+		
 	def draw(self, number):
 		if number == 0:
 			return
-		if (number > len(self.deck)) and len(self.deck) >= 0: #デッキの枚数が足りず、かつ捨て札があるとき
+		if number > self.deck_count() and not self.is_dispile_empty(): #デッキの枚数が足りず、かつ捨て札があるとき(デッキ足りなくて捨て札もないときに詰みそう)
 			number = self.dispile_to_deck(number)
 		drawcard = self.deck[-number:]
 		self.deck = self.deck[:-number]
 		self.hand.extend(drawcard[::-1])
 	
-	def shuffle(self):
-		random.shuffle(self.deck)
-	
 	def dispile_to_deck(self, number):
-		number -= len(self.deck)
+		number -= self.deck_count()
 		self.hand.extend(self.deck[::-1])
 		self.deck.clear()
 		self.deck.extend(self.dispile)
@@ -187,7 +197,7 @@ class PlayerCards():
 		self.deck.extend(self.dispile)
 		self.deck.extend(self.hand)
 		self.deck.extend(self.playarea)
-		print(len(self.deck))
+		print(self.deck_count())
 		vp = sum([i.vicpts(self) for i in self.deck if i.is_victory_or_curse()])
 		return vp	
 	
@@ -233,21 +243,6 @@ class PlayerCards():
 		self.playarea.clear()
 		self.dispile.extend(self.hand)
 		self.hand.clear()
-		
-	def is_deck_empty(self):
-		if self.deck == []:
-			return True
-		return False
-		
-	def is_dispile_empty(self):
-		if self.dispile == []:
-			return True
-		return False
-	
-	def is_hand_empty(self):
-		if self.hand == []:
-			return True
-		return False
 	
 	def reveal_from_deck(self):
 		if len(self.deck) == 0 and len(self.deck) >= 0: #デッキの枚数が足りず、かつ捨て札があるとき
@@ -263,6 +258,30 @@ class PlayerCards():
 	
 	def is_card_in_hand(self, name):
 		return name in [x.ename for x in self.hand]
+	
+	def deck_count(self):
+		return self.deck.counting()
+		
+
+class PlayerCardsList(): 
+	def __init__(self, cards = []):
+		self.list = cards
+	
+	def counting(self):
+		return len(self.list)
+	
+	def shuffle(self):
+		random.shuffle(self.list)
+	
+	def clear(self):
+		self.list.clear()
+	
+	def is_empty(self):
+		return self.list == []
+	
+	def add_cards(self, cards):	
+		pass
+	
 		
 class AvailablePerTurn():
 	def __init__(self):
