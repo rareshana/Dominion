@@ -46,7 +46,7 @@ class HumanPlayer(player.Player):
 		while flag:
 			answer = int(input())
 			place = self.gameinfo.get_supply(answer)
-			flag = self.is_gainable(answer, place, number)
+			flag = self.is_cost_gainable(answer, place, number)
 	
 	def what_gain_undercost_treasure(self, number):
 		print("{0}コスト以下の財宝カードを獲得します".format(number))
@@ -57,9 +57,9 @@ class HumanPlayer(player.Player):
 			if not hasattr(place, 'istreasure'):
 				print("財宝カードを選んでください")
 				continue
-			flag = self.is_gainable(answer, place, number)
+			flag = self.is_cost_gainable(answer, place, number)
 				
-	def is_gainable(self, answer, place, number):
+	def is_cost_gainable(self, answer, place, number):
 		if place.cost <= number:
 			self.gaincard(answer)
 			return 0
@@ -67,7 +67,7 @@ class HumanPlayer(player.Player):
 		return 1
 	
 	def pop_from_hand(self):
-		print([i.jname for i in self.cards.hand])
+		self.print_hand()
 		answer = int(input())
 		if answer == -1:
 			return -1
@@ -75,7 +75,7 @@ class HumanPlayer(player.Player):
 		return card
 	
 	def choose_from_hand(self):
-		print([i.jname for i in self.cards.hand])
+		self.print_hand()
 		answer = int(input())
 		if answer == -1:
 			return -1

@@ -10,6 +10,9 @@ class Player():
 		self.isHuman = 0
 		self.other_players = []
 		self.gameinfo = PlayerGameInfo(game)
+		
+	def print_hand(self):
+		self.cards.print_hand()
 	
 	def draw(self, number):
 		self.cards.draw(number)
@@ -57,6 +60,9 @@ class Player():
 			return
 		if isinstance(object, list):
 			[self.trashcard(i) for i in object]
+		
+		if isinstance(object, CardsHolder):
+			[self.trashcard(i) for i in object.list]
 		
 		
 	def put_on_trash(self, card):
@@ -127,8 +133,8 @@ class Player():
 	def is_hand_empty(self):
 		return self.cards.is_hand_empty()
 
-	def reveal_from_deck(self):
-		return self.cards.reveal_from_deck()
+	def reveal_from_deck(self, number):
+		return self.cards.reveal_from_deck(number)
 	
 	def add_hand(self, cards):
 		self.cards.add_hand(cards)
@@ -148,8 +154,11 @@ class Player():
 	def pickup_from_hand(self, number):
 		return self.cards.pickup_from_hand(number)
 	
-	def is_card_in_hand(self, name):
-		return self.cards.is_card_in_hand(name)
+	def is_card_in_hand(self, ename):
+		return self.cards.is_card_in_hand(ename)
+	
+	def index_card_in_hand(self, ename):
+		return self.cards.index_card_in_hand(ename)
 	
 	def use_attack(self):
 		pass
@@ -167,6 +176,8 @@ class PlayerCards():
 		self.dispile = CardsHolder() #捨て札の山 下から上へ
 		self.playarea = CardsHolder() #各プレイヤーの場 左から右へ
 	
+	def print_hand(self):
+		self.hand.print_cardlist()
 	
 	def is_deck_empty(self):
 		return self.deck.is_empty()
@@ -189,8 +200,11 @@ class PlayerCards():
 	def dispile_count(self):
 		return self.dispile.counting()
 		
-	def is_card_in_hand(self, name):
-		return self.hand.is_card_in(name)
+	def is_card_in_hand(self, ename):
+		return self.hand.is_card_in(ename)
+	
+	def index_card_in_hand(self, ename):
+		return self.hand.index(ename)
 		
 	def draw(self, number):
 		if number == 0:
@@ -219,7 +233,7 @@ class PlayerCards():
 	def gather_all_to_deck(self):
 		self.dispile.all_move_to(self.deck)
 		self.hand.all_move_to(self.deck)
-		self.playable.all_move_to(self.deck)
+		self.playarea.all_move_to(self.deck)
 		
 	def hand_typecheck(self, type):
 		return self.hand.is_type_exist(type)
@@ -275,6 +289,9 @@ class CardsHolder():
 			self.list = []
 		else:
 			self.list = cards
+		
+	def print_cardlist(self):
+		print([card.jname for card in self.list])
 	
 	def counting(self):
 		return len(self.list)
@@ -290,6 +307,13 @@ class CardsHolder():
 		
 	def reversed(self):
 		return self.list[::-1]
+		
+	def remove(self, element):
+		self.list.remove(element)
+	
+	def index(self, name):
+		list = [card.ename for card in self.list]
+		return list.index(name)
 	
 	def is_empty(self):
 		return self.list == []
@@ -301,9 +325,11 @@ class CardsHolder():
 		if isinstance(cards, list):
 			self.list.extend(cards)
 			return
+		if isinstance(cards, CardsHolder):
+			self.list.extend(cards.list)
 	
-	def is_card_in(self, name):
-		return name in [card.ename for card in self.list]
+	def is_card_in(self, ename):
+		return ename in [card.ename for card in self.list]
 	
 	def victorycount(self):
 		vp = sum([card.vicpts(self.list) for card in self.list if card.is_victory_or_curse()])

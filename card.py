@@ -1,3 +1,5 @@
+import player
+
 class CardType():
 	cardtype = {'action':'isaction', 'treasure':'istreasure', 'victory':'isvictory', 'curse':'iscurse', 'reaction':'isreaction', 'attack':'isattack'}
 	
@@ -207,8 +209,7 @@ class Chancellor(ActionCard): #宰相
 		print("山札をすべて捨て札にしますか")
 		answer = user.answer_yn()
 		if answer == 'y':
-			user.dispile.extend(user.deck[::-1])
-			user.deck.clear()
+			user.deck.all_move_to(user.dispile)
 			return
 		if answer == 'n':
 			pass
@@ -237,20 +238,21 @@ class Adventurer(ActionCard): #冒険者
 		super().__init__("Adventurer", "冒険者", 6, "王国", "アクション", "基本")
 	
 	def played(self, user):
-		tmp_treasure = []
-		tmp_not_treasure = []
+		tmp_treasure = player.CardsHolder()
+		tmp_not_treasure = player.CardsHolder()
 		
-		while len(tmp_treasure) < 2:
+		while tmp_treasure.counting() < 2:
 			if user.is_deck_empty() and user.is_dispile_empty():
 				break
-			tmp = user.reveal_from_deck()
+			tmp = user.reveal_from_deck(1)
+			tmp = tmp[0]
 			if tmp.is_treasure():
-				tmp_treasure.append(tmp)
+				tmp_treasure.add_cards(tmp)
 			else:
-				tmp_not_treasure.append(tmp)
+				tmp_not_treasure.add_cards(tmp)
 		
-		print(tmp_treasure)
-		print(tmp_not_treasure)
+		tmp_treasure.print_cardlist()
+		tmp_not_treasure.print_cardlist()
 		user.add_hand(tmp_treasure)
 		user.add_dispile(tmp_not_treasure)
 		
@@ -261,16 +263,16 @@ class Cellar(ActionCard): #地下貯蔵庫
 	
 	def played(self, user):
 		user.plusactions(1)
-		choices = []
+		choices = player.CardsHolder()
 		while True:
 			print("捨て札にするカードを選んでください")
 			discarded = user.pop_from_hand()
 			if discarded == -1:
 				break
-			choices.append(discarded)
-		number = len(choices)
+			choices.add_cards(discarded)
+		number = choices.counting()
 		print(number)
-		user.put_on_dispile(choices)
+		user.add_dispile(choices)
 		user.draw(number)
 
 		
@@ -279,13 +281,13 @@ class Chapel(ActionCard): #礼拝堂
 		super().__init__("Chapel", "礼拝堂", 2, "王国", "アクション", "基本")
 	
 	def played(self, user):
-		choices = []
+		choices = player.CardsHolder()
 		for i in range(4):
 			print("廃棄するカードを選んでください")
 			trashed = user.pop_from_hand()
 			if trashed == -1:
 				break
-			choices.append(trashed)
+			choices.add_cards(trashed)
 		user.trashcard(choices)
 
 		
@@ -294,24 +296,29 @@ class Library(ActionCard): #書庫
 		super().__init__("Library", "書庫", 5, "王国", "アクション", "基本")
 	
 	def played(self, user):
-		tmp_action = []
+		tmp_action = player.CardsHolder()
 		while True:
 			if user.is_deck_empty() and user.is_dispile_empty():
 				break
-			if len(user.cards.hand) >= 7:
+			if user.hand_count() >= 7:
 				break
-			tmp = user.reveal_from_deck()
+			tmp = user.reveal_from_deck(1)
+			tmp = tmp[0]
 			if tmp.is_action():
-				print(tmp)
-				print("このカードを手札に加えますか")
-				answer = user.answer_yn()
-				if answer == 'y':
-					user.add_hand(tmp)
-				else:
-					tmp_action.append(tmp)
+				self.is_action_add_hand(user, tmp, tmp_action)
 			else:
 				user.add_hand(tmp)
-		user.put_on_dispile(tmp_action)
+		user.add_dispile(tmp_action)
+	
+	def is_action_add_hand(self, user, tmp, tmp_action):
+		print(tmp.jname)
+		print("このカードを手札に加えますか")
+		answer = user.answer_yn()
+		if answer == 'y':
+			user.add_hand(tmp)
+		else:
+			tmp_action.add_cards(tmp)
+		return tmp_action
 		
 
 class Mine(ActionCard): #鉱山
@@ -360,8 +367,7 @@ class MoneyLender(ActionCard): #金貸し
 		if not user.is_card_in_hand('Copper'):
 			print("廃棄するカードがありません")
 			return
-		list = [x.ename for x in user.cards.hand]
-		number = list.index('Copper')
+		number = user.index_card_in_hand('Copper')
 		trashed = user.hand_pop(number)
 		user.trashcard(trashed)
 		user.pluscoins(3)
@@ -394,12 +400,12 @@ class Spy(ActionCard, AttackCard):
 		user.draw(1)
 		user.plusactions(1)
 		for player in ([user] + user.other_players):
-			revealed = player.reveal_from_deck()
-			print(revealed.ename)
+			revealed = player.reveal_from_deck(1)[0]
+			print(revealed.jname)
 			print("このカードを捨てますか/戻しますか(y/n)")
 			answer = user.answer_yn()
 			if answer == 'y':
-				player.put_on_dispile(revealed)
+				player.add_dispile(revealed)
 			else:
 				player.add_deck(revealed)
 
@@ -409,35 +415,34 @@ class Thief(ActionCard, AttackCard):
 	
 	def played(self, user):
 		user.use_attack()
-		revealed = []
-		trasheds = []
-		for player in user.other_players:
-			revealed.append(player.reveal_from_deck())
-			revealed.append(player.reveal_from_deck())
-			print([card.ename for card in revealed])
-			if len([card for card in revealed if card.is_type('treasure')]) == 0:
+		revealed = player.CardsHolder()
+		trasheds = player.CardsHolder()
+		for one in user.other_players:
+			revealed.add_cards(one.reveal_from_deck(2))
+			revealed.print_cardlist()
+			if not revealed.is_type_exist('treasure'):
 				print("廃棄するカードがありません")
-				player.put_on_dispile(revealed)
+				one.add_dispile(revealed)
 				continue
 			while True:
 				print("廃棄する財宝カードを選んでください")
 				answer = int(input())
-				trashed = revealed[answer]
+				trashed = revealed.pickup(answer)
 				if trashed.is_treasure():
 					break
-			trasheds.append(trashed)
+			trasheds.add_cards(trashed)
 			revealed.remove(trashed)
-			player.put_on_dispile(revealed)
+			one.add_dispile(revealed)
 			revealed.clear()
 		
 		while True:
 			print("獲得する財宝カードを選んでください")
-			print(trasheds)
+			trasheds.print_cardlist()
 			answer = int(input())
 			if answer == -1:
 				break
 			gained = trasheds.pop(answer)
-			user.put_on_dispile(gained) #獲得時効果があるカードの獲得時効果が発動しない　やはりgaincardの挙動を見直す必要あり
+			user.add_dispile(gained) #獲得時効果があるカードの獲得時効果が発動しない　やはりgaincardの挙動を見直す必要あり
 		user.trashcard(trasheds)
 			
 			
