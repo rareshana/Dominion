@@ -35,7 +35,7 @@ class Player():
 		place = self.gameinfo.get_supply(number)
 		if place.is_left(): #山札が切れていない場合のみ獲得できる
 			gainedcard = place.pile.pop()
-			self.put_on_dispile(gainedcard)
+			self.add_dispile(gainedcard)
 			gainedcard.gained(self)
 			self.zerocheck_pile(place)
 	
@@ -43,7 +43,7 @@ class Player():
 		place = self.gameinfo.get_supply(number)
 		if not place.is_left():
 			return
-		if self.available.coins >= place.cost and self.available.rest_buys > 0:
+		if self.available.coins >= place.cost and self.available.is_buys_left():
 			self.available.coins -= place.cost #そのカードのコストを購入者の残り金から減算
 			self.available.rest_buys -= 1 #購入権を1減らす
 			print(self.available.rest_buys)
@@ -268,8 +268,6 @@ class PlayerCards():
 		popcard = self.playarea.pop(number)
 		return popcard
 	
-	
-		
 
 class CardsHolder(): 
 	def __init__(self, cards = None):
