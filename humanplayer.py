@@ -79,5 +79,5 @@ class HumanPlayer(player.Player):
 		answer = int(input())
 		if answer == -1:
 			return -1
-		card = self.hand_pickup(answer)
+		card = self.pickup_from_hand(answer)
 		return card

@@ -15,7 +15,7 @@ class Player():
 		self.cards.draw(number)
 	
 	def playcard(self, number, when = None): #カードは手札からプレイされる　手札の何枚目かをnumberとして与える 正規のタイミング(財宝フェイズに出す財宝、アクションフェイズにアクション権を消費して出すアクションカード)でカードをプレイするとき、whenに'right'を与えることにする
-		the_card = self.cards.hand_pickup(number)
+		the_card = self.cards.pickup_from_hand(number)
 		if (when is None) or (self.gameinfo.playable(the_card)):
 			playedcard = self.cards.play_from_hands(number)
 			self.gameinfo.rightplayed(when)
@@ -72,7 +72,7 @@ class Player():
 		return self.cards.victorycount()
 	
 	def handcheck(self, type):
-		return self.cards.handcheck(type)
+		return self.cards.hand_typecheck(type)
 	
 	def plusactions(self, number):
 		self.available.plusactions(number)
@@ -145,21 +145,27 @@ class Player():
 	def playarea_pop(self, card):
 		self.cards.playarea_pop(card)
 	
-	def hand_pickup(self, number):
-		return self.cards.hand_pickup(number)
+	def pickup_from_hand(self, number):
+		return self.cards.pickup_from_hand(number)
 	
 	def is_card_in_hand(self, name):
 		return self.cards.is_card_in_hand(name)
 	
 	def use_attack(self):
 		pass
+	
+	def deck_count(self):
+		return self.cards.deck_count()
+	
+	def hand_count(self):
+		return self.cards.hand_count()
 		
 class PlayerCards():
 	def __init__(self):
-		self.deck = PlayerCardsList() #デッキ 下から上へ
-		self.hand = PlayerCardsList() #手札 左から右へ
-		self.dispile = PlayerCardsList() #捨て札の山 下から上へ
-		self.playarea = PlayerCardsList() #各プレイヤーの場 左から右へ
+		self.deck = CardsHolder() #デッキ 下から上へ
+		self.hand = CardsHolder() #手札 左から右へ
+		self.dispile = CardsHolder() #捨て札の山 下から上へ
+		self.playarea = CardsHolder() #各プレイヤーの場 左から右へ
 	
 	
 	def is_deck_empty(self):
@@ -173,99 +179,104 @@ class PlayerCards():
 	
 	def shuffle(self):
 		self.deck.shuffle()
+	
+	def deck_count(self):
+		return self.deck.counting()
+	
+	def hand_count(self):
+		return self.hand.counting()
+	
+	def dispile_count(self):
+		return self.dispile.counting()
+		
+	def is_card_in_hand(self, name):
+		return self.hand.is_card_in(name)
 		
 	def draw(self, number):
 		if number == 0:
 			return
 		if number > self.deck_count() and not self.is_dispile_empty(): #デッキの枚数が足りず、かつ捨て札があるとき(デッキ足りなくて捨て札もないときに詰みそう)
-			number = self.dispile_to_deck(number)
-		drawcard = self.deck[-number:]
-		self.deck = self.deck[:-number]
-		self.hand.extend(drawcard[::-1])
+			number -= self.deck_count()
+			self.deck.all_move_to(self.hand, 'r')
+			self.dispile_to_deck()
+		drawcard = self.pop_from_decktop(number)
+		self.add_hand(drawcard[::-1])
+
+	def pop_from_decktop(self, number):
+		return self.deck.pop_from_top(number)
 	
-	def dispile_to_deck(self, number):
-		number -= self.deck_count()
-		self.hand.extend(self.deck[::-1])
-		self.deck.clear()
-		self.deck.extend(self.dispile)
-		self.dispile.clear()
+	def dispile_to_deck(self):
+		self.dispile.all_move_to(self.deck)
 		self.shuffle()
-		return number
 
 	def victorycount(self):
 		vp = 0
-		self.deck.extend(self.dispile)
-		self.deck.extend(self.hand)
-		self.deck.extend(self.playarea)
+		self.gather_all_to_deck()
 		print(self.deck_count())
-		vp = sum([i.vicpts(self) for i in self.deck if i.is_victory_or_curse()])
-		return vp	
+		vp = self.deck.victorycount()
+		return vp
 	
-	def handcheck(self, type):
-		type_cards = [x for x in self.hand if x.is_type(type)]
-		number = len(type_cards)
-		return number
+	def gather_all_to_deck(self):
+		self.dispile.all_move_to(self.deck)
+		self.hand.all_move_to(self.deck)
+		self.playable.all_move_to(self.deck)
+		
+	def hand_typecheck(self, type):
+		return self.hand.is_type_exist(type)
 		
 	def play_from_hands(self, number):
-		playedcard = self.hand.pop(number)
-		self.playarea.append(playedcard)
+		playedcard = self.hand_pop(number)
+		self.add_playarea(playedcard)
 		return playedcard
 	
-	def hand_pickup(self, number):
-		return self.hand[number]
+	def pickup_from_hand(self, number):
+		return self.hand.pickup(number)
 		
 	def hand_pop(self, number):
 		return self.hand.pop(number)
 	
 	def put_on_dispile(self, cards):
-		if isinstance(cards, card.Card):
-			self.dispile.append(cards)
-		elif isinstance(cards, list):
-			self.dispile.extend(cards)
+		self.dispile.add_cards(cards)
 	
 	def add_dispile(self, cards):
-		self.dispile.extend(cards)
+		self.dispile.add_cards(cards)
 	
 	def add_hand(self, cards):
-		if isinstance(cards, card.Card):
-			self.hand.append(cards)
-		elif isinstance(cards, list):
-			self.hand.extend(cards)
+		self.hand.add_cards(cards)
 	
 	def add_deck(self, cards):
-		if isinstance(cards, card.Card):
-			self.deck.append(cards)
-		elif isinstance(cards, list):
-			self.deck.extend(cards)
+		self.deck.add_cards(cards)
+	
+	def add_playarea(self, cards):
+		self.playarea.add_cards(cards)
 	
 	def cleanup_cards(self):
-		self.dispile.extend(self.playarea)
-		self.playarea.clear()
-		self.dispile.extend(self.hand)
-		self.hand.clear()
-	
-	def reveal_from_deck(self):
-		if len(self.deck) == 0 and len(self.deck) >= 0: #デッキの枚数が足りず、かつ捨て札があるとき
-			self.dispile_to_deck(1)
-		revealed_card = self.deck[-1:][0]
-		self.deck = self.deck[:-1]
-		return revealed_card
+		self.playarea.all_move_to(self.dispile)
+		self.hand.all_move_to(self.dispile)
+		
+	def reveal_from_deck(self, number):
+		revealed_card = CardsHolder()
+		if number > self.deck_count() and not self.is_dispile_empty(): #デッキの枚数が足りず、かつ捨て札があるとき
+			number -= self.deck_count()
+			revealed_card.add_cards(self.reveal_from_deck(self.deck_count()))
+			self.dispile_to_deck()
+		revealed_card.add_cards(self.pop_from_decktop(number))
+		return revealed_card.list
 	
 	def playarea_pop(self, card):
 		number = self.playarea.index(card)
 		popcard = self.playarea.pop(number)
 		return popcard
 	
-	def is_card_in_hand(self, name):
-		return name in [x.ename for x in self.hand]
 	
-	def deck_count(self):
-		return self.deck.counting()
 		
 
-class PlayerCardsList(): 
-	def __init__(self, cards = []):
-		self.list = cards
+class CardsHolder(): 
+	def __init__(self, cards = None):
+		if cards == None:
+			self.list = []
+		else:
+			self.list = cards
 	
 	def counting(self):
 		return len(self.list)
@@ -276,13 +287,58 @@ class PlayerCardsList():
 	def clear(self):
 		self.list.clear()
 	
+	def reverse(self):
+		self.list.reverse()
+		
+	def reversed(self):
+		return self.list[::-1]
+	
 	def is_empty(self):
 		return self.list == []
 	
 	def add_cards(self, cards):	
-		pass
+		if isinstance(cards, card.Card):
+			self.list.append(cards)
+			return
+		if isinstance(cards, list):
+			self.list.extend(cards)
+			return
 	
+	def is_card_in(self, name):
+		return name in [card.ename for card in self.list]
+	
+	def victorycount(self):
+		vp = sum([card.vicpts(self.list) for card in self.list if card.is_victory_or_curse()])
+		return vp
+	
+	def pop_from_top(self, number):
+		cards = CardsHolder(self.list[-number:])
+		self.list = self.list[:-number]
+		return cards.list
 		
+	def pop_from_bottom(self, number):
+		cards = CardsHolder(self.list[:number])
+		self.list = self.list[number:]
+		return cards.list
+	
+	def pickup(self, number):
+		return self.list[number]
+	
+	def pop(self, number):
+		return self.list.pop(number)
+	
+	def is_type_exist(self, type):
+		typecards = [card for card in self.list if card.is_type(type)]
+		return typecards != []
+		
+	def all_move_to(self, place, reverse = None):
+		if reverse == 'r':
+			self.reverse()
+		place.add_cards(self.list)
+		self.clear()
+	
+	
+	
 class AvailablePerTurn():
 	def __init__(self):
 		self.rest_actions = 1

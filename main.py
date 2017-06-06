@@ -24,10 +24,10 @@ class Game():
 	def starter(self, supply):
 		for i in range(self.number):#各プレイヤーのデッキに銅貨を7枚、屋敷を3枚ずつ配る
 		#その後、各々のデッキをシャッフルし、デッキから5枚引いて手札にする
-			copper = [card.Copper() for i in range(7)]
-			estate = [card.Estate() for i in range(3)]
-			self.player[i].cards.deck.extend(copper)
-			self.player[i].cards.deck.extend(estate)
+			copper = [card.Copper() for j in range(7)]
+			estate = [card.Estate() for j in range(3)]
+			self.player[i].add_deck(copper)
+			self.player[i].add_deck(estate)
 			self.player[i].shuffle()
 			self.player[i].draw(5)
 			
@@ -187,6 +187,7 @@ class ActionPhase(Phase):
 	def __init__(self, player):
 		super().__init__(player)
 		print("アクションフェイズです")
+		print(len(self.player.cards.deck.list) + len(self.player.cards.hand.list) + len(self.player.cards.dispile.list))
 	
 	def start(self):
 		while (self.player.phase_judged(ActionPhase)):
@@ -198,7 +199,7 @@ class ActionPhase(Phase):
 			return
 			
 		if self.player.isAI == 1 or self.player.isHuman == 1:  #AIまたは人間用
-			print([i.jname for i in self.player.cards.hand])
+			print([i.jname for i in self.player.cards.hand.list])
 			print("どのアクションカードを使用しますか")
 			self.player.what_action()
 		#分けられそう		
@@ -214,7 +215,7 @@ class TreasurePhase(Phase):
 	def __init__(self, player):
 		super().__init__(player)
 		print("財宝フェイズです")
-		print([i.jname for i in self.player.cards.hand])
+		print([i.jname for i in self.player.cards.hand.list])
 		
 	def start(self):
 		if self.player.isAI == 1:  #AI用
@@ -236,7 +237,7 @@ class TreasurePhase(Phase):
 	
 	def treasure_playable_time(self, flag):
 		while flag != -1:
-			print([i.jname for i in self.player.cards.hand])
+			print([i.jname for i in self.player.cards.hand.list])
 			print("使用する財宝カードの番号を入力してください")
 			flag = self.player.what_coin_play()
 			
