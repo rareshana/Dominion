@@ -1,6 +1,6 @@
 import player
 
-class AIPlayer1(player.Player):#縺企≡繝励Ξ繧､
+class AIPlayer1(player.Player):#お金プレイ
     def __init__(self, game):
         super().__init__(game)
         self.isAI = 1
@@ -29,7 +29,7 @@ class AIPlayer1(player.Player):#縺企≡繝励Ξ繧､
         self.buycard(7)
 
 
-class AIPlayer2(player.Player):#骰帛�ｶ螻九せ繝�繝ｭ
+class AIPlayer2(player.Player):#鍛冶屋ステロ
     def __init__(self, game):
         super().__init__(game)
         self.isAI = 1
