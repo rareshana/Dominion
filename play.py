@@ -1,11 +1,11 @@
-import main
+import general
 import card
 import player
 import aiplayer
 import humanplayer
 
 def game_setup(number, nontest=None):
-    game = main.Game(number)
+    game = general.Game(number)
     player_entry(game, game.player, game.number, nontest)
     supply = supply_decide()
     game.starter(supply)

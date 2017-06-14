@@ -1,6 +1,7 @@
 import random
 import card
-import main
+import commonuse
+import general
 
 class Player():
     def __init__(self, game):
@@ -28,7 +29,7 @@ class Player():
         return False
 
     def is_actionphase_end(self, when):
-        if self.gameinfo.phase_judged(main.ActionPhase) \
+        if self.gameinfo.phase_judged(general.ActionPhase) \
             and (when is 'right') and (not self.is_action_left()):
             self.phaseend()
 
@@ -36,7 +37,6 @@ class Player():
         self.cards.shuffle()
 
     def gaincard(self, number):
-    #カードは原則サプライから獲得される。山札の番号をnumberとして与える。それだけだと情報が足りないので、fieldの情報も与えなければ……
         place = self.gameinfo.get_supply(number)
         if place.is_left(): #山札が切れていない場合のみ獲得できる
             gainedcard = place.pile.pop()
@@ -174,10 +174,10 @@ class Player():
 
 class PlayerCards():
     def __init__(self):
-        self.deck = CardsHolder() #デッキ 下から上へ
-        self.hand = CardsHolder() #手札 左から右へ
-        self.dispile = CardsHolder() #捨て札の山 下から上へ
-        self.playarea = CardsHolder() #各プレイヤーの場 左から右へ
+        self.deck = commonuse.CardsHolder() #デッキ 下から上へ
+        self.hand = commonuse.CardsHolder() #手札 左から右へ
+        self.dispile = commonuse.CardsHolder() #捨て札の山 下から上へ
+        self.playarea = commonuse.CardsHolder() #各プレイヤーの場 左から右へ
 
     def print_hand(self):
         self.hand.print_cardlist()
@@ -287,85 +287,6 @@ class PlayerCards():
         return popcard
 
 
-class CardsHolder():
-    def __init__(self, cards=None):
-        if cards is None:
-            self.list = []
-        else:
-            self.list = cards
-
-    def print_cardlist(self):
-        print([card.jname for card in self.list])
-
-    def counting(self):
-        return len(self.list)
-
-    def shuffle(self):
-        random.shuffle(self.list)
-
-    def clear(self):
-        self.list.clear()
-
-    def reverse(self):
-        self.list.reverse()
-
-    def reversed(self):
-        return self.list[::-1]
-
-    def remove(self, element):
-        self.list.remove(element)
-
-    def index(self, name):
-        cardname_list = [card.ename for card in self.list]
-        return cardname_list.index(name)
-
-    def is_empty(self):
-        return self.list == []
-
-    def add_cards(self, cards):
-        if isinstance(cards, card.Card):
-            self.list.append(cards)
-            return
-        if isinstance(cards, list):
-            self.list.extend(cards)
-            return
-        if isinstance(cards, CardsHolder):
-            self.list.extend(cards.list)
-
-    def is_card_in(self, ename):
-        return ename in [card.ename for card in self.list]
-
-    def victorycount(self):
-        vp = sum([card.vicpts(self.list) for card in self.list if card.is_victory_or_curse()])
-        return vp
-
-    def pop_from_top(self, number):
-        cards = CardsHolder(self.list[-number:])
-        self.list = self.list[:-number]
-        return cards.list
-
-    def pop_from_bottom(self, number):
-        cards = CardsHolder(self.list[:number])
-        self.list = self.list[number:]
-        return cards.list
-
-    def pickup(self, number):
-        return self.list[number]
-
-    def pop(self, number):
-        return self.list.pop(number)
-
-    def is_type_exist(self, ctype):
-        typecards = [card for card in self.list if card.is_type(ctype)]
-        return typecards != []
-
-    def all_move_to(self, place, reverse=None):
-        if reverse == 'r':
-            self.reverse()
-        place.add_cards(self.list)
-        self.clear()
-
-
 class AvailablePerTurn():
     def __init__(self):
         self.rest_actions = 1
@@ -421,7 +342,7 @@ class PlayerGameInfo():
         self.game.put_on_trash(cards)
 
     def get_cardtype(self, ctype):
-        return card.CardType.get_cardtype(ctype)
+        return commonuse.CardType.get_cardtype(ctype)
 
     def add_zeropile(self):
         self.game.add_zeropile()

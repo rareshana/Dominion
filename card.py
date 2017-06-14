@@ -1,15 +1,5 @@
 import player
-
-class CardType():
-    cardtype = {'action':'isaction', 'treasure':'istreasure', 'victory':'isvictory', 'curse':'iscurse', 'reaction':'isreaction', 'attack':'isattack'}
-
-    @classmethod
-    def get_cardtype(cls, ctype):
-        return cls.cardtype.get(ctype)
-
-    @classmethod
-    def get_typelist(cls):
-        return cls.cardtype.values()
+import commonuse
 
 class Card(): #カード
     def __init__(self, ename, jname, cost, clas, ctype, setname):
@@ -30,7 +20,7 @@ class Card(): #カード
         pass
 
     def is_type(self, ctype):
-        typec = CardType.get_cardtype(ctype)
+        typec = commonuse.CardType.get_cardtype(ctype)
         return hasattr(self, typec)
 
     def is_action(self):
@@ -237,8 +227,8 @@ class Adventurer(ActionCard): #冒険者
         super().__init__("Adventurer", "冒険者", 6, "王国", "アクション", "基本")
 
     def played(self, user):
-        tmp_treasure = player.CardsHolder()
-        tmp_not_treasure = player.CardsHolder()
+        tmp_treasure = commonuse.CardsHolder()
+        tmp_not_treasure = commonuse.CardsHolder()
 
         while tmp_treasure.counting() < 2:
             if user.is_deck_empty() and user.is_dispile_empty():
