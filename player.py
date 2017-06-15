@@ -11,6 +11,7 @@ class Player():
         self.isHuman = 0
         self.other_players = []
         self.gameinfo = PlayerGameInfo(game)
+    
 
     def print_hand(self):
         self.cards.print_hand()
@@ -273,7 +274,7 @@ class PlayerCards():
         self.hand.all_move_to(self.dispile)
 
     def reveal_from_deck(self, number):
-        revealed_card = CardsHolder()
+        revealed_card = commonuse.CardsHolder()
         if number > self.deck_count() and not self.is_dispile_empty(): #デッキの枚数が足りず、かつ捨て札があるとき
             number -= self.deck_count()
             revealed_card.add_cards(self.reveal_from_deck(self.deck_count()))

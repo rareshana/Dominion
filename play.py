@@ -22,6 +22,7 @@ def player_entry(game, playerr, people, nontest=None):
         tmp.extend(playerr[:i])
         playerr[i].other_players = tmp
 
+        
 def player_decide(game, nontest):
     if nontest is None:
         testplayer = [player.Player(game), player.Player(game), player.Player(game), player.Player(game)]

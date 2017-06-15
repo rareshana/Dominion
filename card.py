@@ -190,6 +190,7 @@ class CouncilRoom(ActionCard): #議事堂
         user.plusbuys(1)
         [x.draw(1) for x in user.other_players]
 
+
 class Chancellor(ActionCard): #宰相
     def __init__(self):
         super().__init__("Chancellor", "宰相", 3, "王国", "アクション", "基本")
@@ -252,7 +253,7 @@ class Cellar(ActionCard): #地下貯蔵庫
 
     def played(self, user):
         user.plusactions(1)
-        choices = player.CardsHolder()
+        choices = commonuse.CardsHolder()
         while True:
             print("捨て札にするカードを選んでください")
             discarded = user.pop_from_hand()
@@ -270,7 +271,7 @@ class Chapel(ActionCard): #礼拝堂
         super().__init__("Chapel", "礼拝堂", 2, "王国", "アクション", "基本")
 
     def played(self, user):
-        choices = player.CardsHolder()
+        choices = commonuse.CardsHolder()
         for i in range(4):
             print("廃棄するカードを選んでください")
             trashed = user.pop_from_hand()
@@ -285,7 +286,7 @@ class Library(ActionCard): #書庫
         super().__init__("Library", "書庫", 5, "王国", "アクション", "基本")
 
     def played(self, user):
-        tmp_action = player.CardsHolder()
+        tmp_action = commonuse.CardsHolder()
         while True:
             if user.is_deck_empty() and user.is_dispile_empty():
                 break
@@ -404,8 +405,8 @@ class Thief(ActionCard, AttackCard):
 
     def played(self, user):
         user.use_attack()
-        revealed = player.CardsHolder()
-        trasheds = player.CardsHolder()
+        revealed = commonuse.CardsHolder()
+        trasheds = commonuse.CardsHolder()
         for one in user.other_players:
             revealed.add_cards(one.reveal_from_deck(2))
             revealed.print_cardlist()
